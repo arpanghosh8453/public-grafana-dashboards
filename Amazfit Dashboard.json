@@ -7,6 +7,14 @@
       "type": "datasource",
       "pluginId": "influxdb",
       "pluginName": "InfluxDB"
+    },
+    {
+      "name": "DS_FITBIT_DATABASE",
+      "label": "Fitbit Database",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "influxdb",
+      "pluginName": "InfluxDB"
     }
   ],
   "__elements": {},
@@ -98,8 +106,8 @@
   "panels": [
     {
       "datasource": {
-        "type": "influxdb",
-        "uid": "${DS_AMAZFIT_DATABASE}"
+        "type": "datasource",
+        "uid": "-- Mixed --"
       },
       "description": "Resting HR",
       "fieldConfig": {
@@ -137,7 +145,7 @@
               "type": "linear"
             },
             "showPoints": "auto",
-            "spanNulls": false,
+            "spanNulls": true,
             "stacking": {
               "group": "A",
               "mode": "none"
@@ -192,6 +200,21 @@
                 }
               }
             ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Amazfit Resting HR"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "semi-dark-yellow",
+                  "mode": "fixed"
+                }
+              }
+            ]
           }
         ]
       },
@@ -222,7 +245,7 @@
       "pluginVersion": "7.5.2",
       "targets": [
         {
-          "alias": "Resting HR",
+          "alias": "Amazfit Resting HR",
           "datasource": {
             "type": "influxdb",
             "uid": "${DS_AMAZFIT_DATABASE}"
@@ -244,7 +267,7 @@
           "measurement": "heartrate",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT min(\"value\") + 5 FROM \"heartrate\" WHERE $timeFilter GROUP BY time(1d) fill(null)",
+          "query": "SELECT min(\"value\") + 12 FROM \"heartrate\" WHERE $timeFilter GROUP BY time(1d) fill(null)",
           "queryType": "randomWalk",
           "rawQuery": true,
           "refId": "A",
@@ -264,6 +287,18 @@
             ]
           ],
           "tags": []
+        },
+        {
+          "alias": "Fitbit RHR",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_FITBIT_DATABASE}"
+          },
+          "hide": false,
+          "query": "SELECT distinct(\"value\") FROM \"restingHeartRate\" WHERE $timeFilter GROUP BY time($__interval) fill(null)",
+          "rawQuery": true,
+          "refId": "B",
+          "resultFormat": "time_series"
         }
       ],
       "title": "Resting HR",
@@ -282,8 +317,8 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": {
-        "type": "influxdb",
-        "uid": "${DS_AMAZFIT_DATABASE}"
+        "type": "datasource",
+        "uid": "-- Mixed --"
       },
       "fieldConfig": {
         "defaults": {
@@ -437,63 +472,6 @@
           ]
         },
         {
-          "alias": "Above 105",
-          "datasource": {
-            "type": "influxdb",
-            "uid": "${DS_AMAZFIT_DATABASE}"
-          },
-          "groupBy": [
-            {
-              "params": [
-                "$__interval"
-              ],
-              "type": "time"
-            },
-            {
-              "params": [
-                "null"
-              ],
-              "type": "fill"
-            }
-          ],
-          "hide": true,
-          "measurement": "heartrate",
-          "orderByTime": "ASC",
-          "policy": "default",
-          "query": "select above from (SELECT moving_average(mean(\"value\"), 6) as above FROM \"heartrate\" WHERE $timeFilter GROUP BY time($__interval) fill(null)) where above > 105",
-          "queryType": "randomWalk",
-          "rawQuery": true,
-          "refId": "C",
-          "resultFormat": "time_series",
-          "select": [
-            [
-              {
-                "params": [
-                  "value"
-                ],
-                "type": "field"
-              },
-              {
-                "params": [],
-                "type": "mean"
-              },
-              {
-                "params": [
-                  "8"
-                ],
-                "type": "moving_average"
-              }
-            ]
-          ],
-          "tags": [
-            {
-              "key": "value",
-              "operator": "=~",
-              "value": "/^$RHR$/"
-            }
-          ]
-        },
-        {
           "alias": "Below RHR",
           "datasource": {
             "type": "influxdb",
@@ -549,6 +527,42 @@
               "value": "/^$RHR$/"
             }
           ]
+        },
+        {
+          "alias": "Heart rate",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_FITBIT_DATABASE}"
+          },
+          "hide": false,
+          "query": "SELECT moving_average(mean(\"value\"), 6) FROM \"heartrate\" WHERE $timeFilter GROUP BY time($__interval) fill(null)",
+          "rawQuery": true,
+          "refId": "C",
+          "resultFormat": "time_series"
+        },
+        {
+          "alias": "Above 95",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_FITBIT_DATABASE}"
+          },
+          "hide": false,
+          "query": "select above from (SELECT moving_average(mean(\"value\"), 6) as above FROM \"heartrate\" WHERE $timeFilter GROUP BY time($__interval) fill(null)) where above > 95",
+          "rawQuery": true,
+          "refId": "E",
+          "resultFormat": "time_series"
+        },
+        {
+          "alias": "Below RHR",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_FITBIT_DATABASE}"
+          },
+          "hide": false,
+          "query": "select below from (SELECT moving_average(mean(\"value\"), 6) as below FROM \"heartrate\" WHERE $timeFilter GROUP BY time($__interval) fill(null)) where below < 60",
+          "rawQuery": true,
+          "refId": "F",
+          "resultFormat": "time_series"
         }
       ],
       "thresholds": [],
@@ -610,8 +624,8 @@
       ],
       "crosshairColor": "#8F070C",
       "datasource": {
-        "type": "influxdb",
-        "uid": "${DS_AMAZFIT_DATABASE}"
+        "type": "datasource",
+        "uid": "-- Mixed --"
       },
       "display": "timeline",
       "expandFromQueryS": 0,
@@ -713,175 +727,16 @@
           "tags": []
         },
         {
-          "alias": "Above 95",
+          "alias": "Heart rate",
           "datasource": {
             "type": "influxdb",
-            "uid": "${DS_AMAZFIT_DATABASE}"
+            "uid": "${DS_FITBIT_DATABASE}"
           },
-          "groupBy": [
-            {
-              "params": [
-                "$__interval"
-              ],
-              "type": "time"
-            },
-            {
-              "params": [
-                "null"
-              ],
-              "type": "fill"
-            }
-          ],
-          "hide": true,
-          "measurement": "heartrate",
-          "orderByTime": "ASC",
-          "policy": "default",
-          "query": "select above from (SELECT moving_average(mean(\"value\"), 6) as above FROM \"heartrate\" WHERE $timeFilter GROUP BY time($__interval) fill(null)) where above > 95",
-          "queryType": "randomWalk",
+          "hide": false,
+          "query": "SELECT mean(\"value\") FROM \"heartrate\" WHERE $timeFilter GROUP BY time(5m) fill(null)",
           "rawQuery": true,
-          "refId": "B",
-          "resultFormat": "time_series",
-          "select": [
-            [
-              {
-                "params": [
-                  "value"
-                ],
-                "type": "field"
-              },
-              {
-                "params": [],
-                "type": "mean"
-              },
-              {
-                "params": [
-                  "8"
-                ],
-                "type": "moving_average"
-              }
-            ]
-          ],
-          "tags": [
-            {
-              "key": "value",
-              "operator": "=~",
-              "value": "/^$RHR$/"
-            }
-          ]
-        },
-        {
-          "alias": "Above 105",
-          "datasource": {
-            "type": "influxdb",
-            "uid": "${DS_AMAZFIT_DATABASE}"
-          },
-          "groupBy": [
-            {
-              "params": [
-                "$__interval"
-              ],
-              "type": "time"
-            },
-            {
-              "params": [
-                "null"
-              ],
-              "type": "fill"
-            }
-          ],
-          "hide": true,
-          "measurement": "heartrate",
-          "orderByTime": "ASC",
-          "policy": "default",
-          "query": "select above from (SELECT moving_average(mean(\"value\"), 6) as above FROM \"heartrate\" WHERE $timeFilter GROUP BY time($__interval) fill(null)) where above > 105",
-          "queryType": "randomWalk",
-          "rawQuery": true,
-          "refId": "C",
-          "resultFormat": "time_series",
-          "select": [
-            [
-              {
-                "params": [
-                  "value"
-                ],
-                "type": "field"
-              },
-              {
-                "params": [],
-                "type": "mean"
-              },
-              {
-                "params": [
-                  "8"
-                ],
-                "type": "moving_average"
-              }
-            ]
-          ],
-          "tags": [
-            {
-              "key": "value",
-              "operator": "=~",
-              "value": "/^$RHR$/"
-            }
-          ]
-        },
-        {
-          "alias": "Below RHR",
-          "datasource": {
-            "type": "influxdb",
-            "uid": "${DS_AMAZFIT_DATABASE}"
-          },
-          "groupBy": [
-            {
-              "params": [
-                "$__interval"
-              ],
-              "type": "time"
-            },
-            {
-              "params": [
-                "null"
-              ],
-              "type": "fill"
-            }
-          ],
-          "hide": true,
-          "measurement": "heartrate",
-          "orderByTime": "ASC",
-          "policy": "default",
-          "query": "select below from (SELECT moving_average(mean(\"value\"), 6) as below FROM \"heartrate\" WHERE $timeFilter GROUP BY time($__interval) fill(null)) where below < $RHR",
-          "queryType": "randomWalk",
-          "rawQuery": true,
-          "refId": "D",
-          "resultFormat": "time_series",
-          "select": [
-            [
-              {
-                "params": [
-                  "value"
-                ],
-                "type": "field"
-              },
-              {
-                "params": [],
-                "type": "mean"
-              },
-              {
-                "params": [
-                  "8"
-                ],
-                "type": "moving_average"
-              }
-            ]
-          ],
-          "tags": [
-            {
-              "key": "value",
-              "operator": "=~",
-              "value": "/^$RHR$/"
-            }
-          ]
+          "refId": "E",
+          "resultFormat": "time_series"
         }
       ],
       "textSize": 24,
@@ -926,6 +781,22 @@
       },
       "timeTextColor": "#d8d9da",
       "title": "Heart Rate",
+      "transformations": [
+        {
+          "id": "calculateField",
+          "options": {
+            "alias": "Merged",
+            "mode": "reduceRow",
+            "reduce": {
+              "include": [
+                "Heart rate"
+              ],
+              "reducer": "max"
+            },
+            "replaceFields": true
+          }
+        }
+      ],
       "transparent": true,
       "type": "natel-discrete-panel",
       "units": "short",
@@ -948,24 +819,201 @@
       "backgroundColor": "rgba(128,128,128,0.1)",
       "colorMaps": [
         {
+          "$$hashKey": "object:3054",
+          "color": "#FFEE52",
+          "text": "On Hand"
+        },
+        {
+          "$$hashKey": "object:4255",
+          "color": "#00000000",
+          "text": "Off Hand"
+        }
+      ],
+      "crosshairColor": "#8F070C",
+      "datasource": {
+        "type": "datasource",
+        "uid": "-- Mixed --"
+      },
+      "display": "timeline",
+      "expandFromQueryS": 0,
+      "extendLastValue": true,
+      "gridPos": {
+        "h": 4,
+        "w": 24,
+        "x": 0,
+        "y": 22
+      },
+      "highlightOnMouseover": true,
+      "id": 26,
+      "legendSortBy": "-ms",
+      "lineColor": "rgba(0,0,0,0.1)",
+      "metricNameColor": "#000000",
+      "pluginVersion": "7.5.2",
+      "rangeMaps": [
+        {
+          "$$hashKey": "object:3059",
+          "from": "1",
+          "text": "On Hand",
+          "to": "300"
+        }
+      ],
+      "rowHeight": 50,
+      "showDistinctCount": false,
+      "showLegend": true,
+      "showLegendNames": true,
+      "showLegendPercent": true,
+      "showLegendValues": true,
+      "showTimeAxis": true,
+      "showTransitionCount": false,
+      "targets": [
+        {
+          "alias": "Amazfit",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_AMAZFIT_DATABASE}"
+          },
+          "groupBy": [
+            {
+              "params": [
+                "$__interval"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "null"
+              ],
+              "type": "fill"
+            }
+          ],
+          "hide": false,
+          "measurement": "heartrate",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "query": "SELECT mean(value) FROM \"heartrate\" WHERE $timeFilter GROUP BY time(10m) fill(0)",
+          "queryType": "randomWalk",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "mean"
+              },
+              {
+                "params": [
+                  "6"
+                ],
+                "type": "moving_average"
+              }
+            ]
+          ],
+          "tags": []
+        },
+        {
+          "alias": "Fitbit",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_FITBIT_DATABASE}"
+          },
+          "hide": false,
+          "query": "SELECT mean(value) FROM \"heartrate\" WHERE time < '2023-03-05 00:00:00' GROUP BY time(2m) fill(0)",
+          "rawQuery": true,
+          "refId": "B",
+          "resultFormat": "time_series"
+        }
+      ],
+      "textSize": 24,
+      "textSizeTime": 12,
+      "timeOptions": [
+        {
+          "name": "Years",
+          "value": "years"
+        },
+        {
+          "name": "Months",
+          "value": "months"
+        },
+        {
+          "name": "Weeks",
+          "value": "weeks"
+        },
+        {
+          "name": "Days",
+          "value": "days"
+        },
+        {
+          "name": "Hours",
+          "value": "hours"
+        },
+        {
+          "name": "Minutes",
+          "value": "minutes"
+        },
+        {
+          "name": "Seconds",
+          "value": "seconds"
+        },
+        {
+          "name": "Milliseconds",
+          "value": "milliseconds"
+        }
+      ],
+      "timePrecision": {
+        "name": "Minutes",
+        "value": "minutes"
+      },
+      "timeTextColor": "#d8d9da",
+      "title": "Band wearing ",
+      "transformations": [
+        {
+          "id": "calculateField",
+          "options": {
+            "alias": "Max-merged",
+            "mode": "reduceRow",
+            "reduce": {
+              "include": [
+                "Amazfit",
+                "Fitbit"
+              ],
+              "reducer": "max"
+            },
+            "replaceFields": true
+          }
+        }
+      ],
+      "transparent": true,
+      "type": "natel-discrete-panel",
+      "units": "short",
+      "use12HourClock": false,
+      "useTimePrecision": false,
+      "valueMaps": [
+        {
+          "$$hashKey": "object:3057",
+          "op": "=",
+          "text": "Off Hand",
+          "value": "0"
+        }
+      ],
+      "valueTextColor": "#000000",
+      "writeAllValues": false,
+      "writeLastValue": false,
+      "writeMetricNames": false
+    },
+    {
+      "backgroundColor": "rgba(128,128,128,0.1)",
+      "colorMaps": [
+        {
           "$$hashKey": "object:4323",
           "color": "#CCC",
           "text": "N/A"
-        },
-        {
-          "$$hashKey": "object:4326",
-          "color": "#8AB8FF",
-          "text": "light"
-        },
-        {
-          "$$hashKey": "object:4327",
-          "color": "#1F60C4",
-          "text": "deep"
-        },
-        {
-          "$$hashKey": "object:4328",
-          "color": "#FF7383",
-          "text": "rem"
         },
         {
           "$$hashKey": "object:4456",
@@ -980,17 +1028,17 @@
       ],
       "crosshairColor": "#8F070C",
       "datasource": {
-        "type": "influxdb",
-        "uid": "${DS_AMAZFIT_DATABASE}"
+        "type": "datasource",
+        "uid": "-- Mixed --"
       },
       "display": "timeline",
       "expandFromQueryS": 0,
       "extendLastValue": true,
       "gridPos": {
-        "h": 4,
+        "h": 6,
         "w": 24,
         "x": 0,
-        "y": 22
+        "y": 26
       },
       "highlightOnMouseover": true,
       "id": 24,
@@ -1011,9 +1059,9 @@
       "showDistinctCount": false,
       "showLegend": true,
       "showLegendCounts": false,
-      "showLegendNames": false,
+      "showLegendNames": true,
       "showLegendPercent": true,
-      "showLegendTime": false,
+      "showLegendTime": true,
       "showLegendValues": true,
       "showTimeAxis": true,
       "showTransitionCount": false,
@@ -1024,14 +1072,27 @@
             "type": "influxdb",
             "uid": "${DS_AMAZFIT_DATABASE}"
           },
-          "groupBy": [],
+          "groupBy": [
+            {
+              "params": [
+                "1h"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "previous"
+              ],
+              "type": "fill"
+            }
+          ],
           "hide": false,
           "measurement": "sleep_periods",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT sleep_type FROM sleep_levels WHERE short = false",
+          "query": "SELECT last(\"state\") FROM \"sleep_periods\" WHERE $timeFilter GROUP BY time(10m) fill(previous)",
           "queryType": "randomWalk",
-          "rawQuery": false,
+          "rawQuery": true,
           "refId": "A",
           "resultFormat": "time_series",
           "select": [
@@ -1041,15 +1102,20 @@
                   "state"
                 ],
                 "type": "field"
+              },
+              {
+                "params": [],
+                "type": "last"
               }
             ]
-          ]
+          ],
+          "tags": []
         },
         {
           "alias": "All sleeps",
           "datasource": {
             "type": "influxdb",
-            "uid": "${DS_AMAZFIT_DATABASE}"
+            "uid": "${DS_FITBIT_DATABASE}"
           },
           "groupBy": [
             {
@@ -1068,7 +1134,7 @@
           "hide": false,
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT sleep_type FROM sleep_levels",
+          "query": "SELECT last(sleep_type) FROM sleep_levels WHERE short = false GROUP BY time(10m) fill(previous)",
           "rawQuery": true,
           "refId": "B",
           "resultFormat": "time_series",
@@ -1131,6 +1197,29 @@
       },
       "timeTextColor": "#d8d9da",
       "title": "Sleep Pattern",
+      "transformations": [
+        {
+          "id": "calculateField",
+          "options": {
+            "alias": "Merged",
+            "binary": {
+              "left": "Sleep levels",
+              "operator": "+",
+              "reducer": "sum",
+              "right": "All sleeps"
+            },
+            "mode": "reduceRow",
+            "reduce": {
+              "include": [
+                "Sleep levels",
+                "All sleeps"
+              ],
+              "reducer": "firstNotNull"
+            },
+            "replaceFields": true
+          }
+        }
+      ],
       "transparent": true,
       "type": "natel-discrete-panel",
       "units": "short",
@@ -1140,8 +1229,32 @@
         {
           "$$hashKey": "object:180",
           "op": "=",
-          "text": "N/A",
+          "text": "awake",
           "value": "null"
+        },
+        {
+          "$$hashKey": "object:2352",
+          "op": "=",
+          "text": "asleep",
+          "value": "light"
+        },
+        {
+          "$$hashKey": "object:2354",
+          "op": "=",
+          "text": "asleep",
+          "value": "deep"
+        },
+        {
+          "$$hashKey": "object:2356",
+          "op": "=",
+          "text": "awake",
+          "value": "wake"
+        },
+        {
+          "$$hashKey": "object:2358",
+          "op": "=",
+          "text": "asleep",
+          "value": "rem"
         }
       ],
       "valueTextColor": "#000000",
@@ -1151,8 +1264,8 @@
     },
     {
       "datasource": {
-        "type": "influxdb",
-        "uid": "${DS_AMAZFIT_DATABASE}"
+        "type": "datasource",
+        "uid": "-- Mixed --"
       },
       "description": "",
       "fieldConfig": {
@@ -1160,7 +1273,7 @@
           "color": {
             "mode": "thresholds"
           },
-          "displayName": "Steps 👟👟",
+          "displayName": "Steps 👟",
           "mappings": [],
           "max": 15000,
           "min": 0,
@@ -1190,10 +1303,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 9,
-        "w": 3,
+        "h": 10,
+        "w": 4,
         "x": 0,
-        "y": 26
+        "y": 32
       },
       "id": 10,
       "options": {
@@ -1212,7 +1325,6 @@
       "pluginVersion": "9.3.2",
       "targets": [
         {
-          "alias": "Last day Steps",
           "datasource": {
             "type": "influxdb",
             "uid": "${DS_AMAZFIT_DATABASE}"
@@ -1234,7 +1346,6 @@
           "measurement": "activity",
           "orderByTime": "ASC",
           "policy": "default",
-          "queryType": "randomWalk",
           "refId": "A",
           "resultFormat": "time_series",
           "select": [
@@ -1247,21 +1358,38 @@
               },
               {
                 "params": [],
-                "type": "distinct"
+                "type": "sum"
               }
             ]
           ],
           "tags": []
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_FITBIT_DATABASE}"
+          },
+          "hide": false,
+          "query": "SELECT distinct(\"value\") FROM \"steps\" WHERE $timeFilter GROUP BY time($__interval) fill(null)",
+          "rawQuery": true,
+          "refId": "B",
+          "resultFormat": "time_series"
         }
       ],
       "title": "Given duration Steps",
+      "transformations": [
+        {
+          "id": "merge",
+          "options": {}
+        }
+      ],
       "transparent": true,
       "type": "gauge"
     },
     {
       "datasource": {
-        "type": "influxdb",
-        "uid": "${DS_AMAZFIT_DATABASE}"
+        "type": "datasource",
+        "uid": "-- Mixed --"
       },
       "description": "",
       "fieldConfig": {
@@ -1297,10 +1425,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 9,
-        "w": 7,
-        "x": 3,
-        "y": 26
+        "h": 10,
+        "w": 11,
+        "x": 4,
+        "y": 32
       },
       "id": 12,
       "options": {
@@ -1316,6 +1444,301 @@
       "targets": [
         {
           "alias": "Hourly walk heatmap",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_AMAZFIT_DATABASE}"
+          },
+          "groupBy": [
+            {
+              "params": [
+                "1h"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "0"
+              ],
+              "type": "fill"
+            }
+          ],
+          "measurement": "activity",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "queryType": "randomWalk",
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "steps"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "sum"
+              }
+            ]
+          ],
+          "tags": []
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_FITBIT_DATABASE}"
+          },
+          "hide": false,
+          "query": "SELECT distinct(\"value\") FROM \"hourly_steps\" WHERE $timeFilter GROUP BY time($__interval) fill(null)",
+          "rawQuery": true,
+          "refId": "B",
+          "resultFormat": "time_series"
+        }
+      ],
+      "title": "Hourly walk heatmap",
+      "transformations": [
+        {
+          "id": "merge",
+          "options": {}
+        }
+      ],
+      "transparent": true,
+      "type": "marcusolsson-hourly-heatmap-panel"
+    },
+    {
+      "datasource": {
+        "type": "datasource",
+        "uid": "-- Mixed --"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "continuous-YlBl"
+          },
+          "custom": {
+            "calculation": "last",
+            "colorPalette": "fieldOptions",
+            "colorSpace": "rgb",
+            "groupBy": 60,
+            "invertPalette": false,
+            "nullValueColor": "rgb(155, 155, 155)"
+          },
+          "mappings": [
+            {
+              "options": {
+                "asleep": {
+                  "index": 1,
+                  "text": "0"
+                },
+                "awake": {
+                  "index": 0,
+                  "text": "1"
+                }
+              },
+              "type": "value"
+            }
+          ],
+          "max": 1,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 9,
+        "x": 15,
+        "y": 32
+      },
+      "id": 27,
+      "options": {
+        "from": "0",
+        "legendGradientQuality": "medium",
+        "regions": [
+          {
+            "color": "#ccfbc059",
+            "end": {
+              "hour": 22,
+              "minute": 0
+            },
+            "start": {
+              "hour": 8,
+              "minute": 0
+            }
+          },
+          {
+            "color": "rgba(242, 73, 92, 0.5)",
+            "end": {
+              "hour": 23,
+              "minute": 59
+            },
+            "start": {
+              "hour": 22,
+              "minute": 0
+            }
+          },
+          {
+            "color": "rgba(242, 73, 92, 0.5)",
+            "end": {
+              "hour": 8,
+              "minute": 0
+            },
+            "start": {
+              "hour": 0,
+              "minute": 0
+            }
+          }
+        ],
+        "showCellBorder": false,
+        "showLegend": false,
+        "showTooltip": true,
+        "showValueIndicator": false,
+        "to": "0"
+      },
+      "pluginVersion": "9.3.2",
+      "targets": [
+        {
+          "alias": "Hourly walk heatmap",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_AMAZFIT_DATABASE}"
+          },
+          "groupBy": [
+            {
+              "params": [
+                "30m"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "previous"
+              ],
+              "type": "fill"
+            }
+          ],
+          "measurement": "sleep_periods",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "query": "SELECT last(\"state\") FROM \"sleep_periods\" WHERE $timeFilter AND time > '2023-03-05 00:00:00' GROUP BY time(1h) fill(previous)",
+          "queryType": "randomWalk",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "state"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "last"
+              }
+            ]
+          ],
+          "tags": []
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_FITBIT_DATABASE}"
+          },
+          "hide": false,
+          "query": "SELECT mean(\"seconds\") FROM \"sleep_levels\" WHERE $timeFilter GROUP BY time(1h) fill(null)",
+          "rawQuery": true,
+          "refId": "B",
+          "resultFormat": "time_series"
+        }
+      ],
+      "title": "Sleep Regularity",
+      "transformations": [
+        {
+          "id": "calculateField",
+          "options": {
+            "mode": "reduceRow",
+            "reduce": {
+              "include": [
+                "Hourly walk heatmap",
+                "sleep_levels.mean"
+              ],
+              "reducer": "sum"
+            },
+            "replaceFields": true
+          }
+        }
+      ],
+      "transparent": true,
+      "type": "marcusolsson-hourly-heatmap-panel"
+    },
+    {
+      "aliasColors": {
+        "Amazfit hourly steps": "light-orange",
+        "Avg. Hourly Step Count": "super-light-yellow",
+        "hourly_steps.mean": "super-light-yellow",
+        "hourly_steps.moving_average": "light-purple"
+      },
+      "bars": true,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": {
+        "type": "datasource",
+        "uid": "-- Mixed --"
+      },
+      "fill": 0,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 7,
+        "w": 14,
+        "x": 0,
+        "y": 42
+      },
+      "hiddenSeries": false,
+      "id": 4,
+      "legend": {
+        "alignAsTable": false,
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": false,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "9.3.2",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "alias": "Amazfit hourly steps",
           "datasource": {
             "type": "influxdb",
             "uid": "${DS_AMAZFIT_DATABASE}"
@@ -1350,115 +1773,44 @@
               },
               {
                 "params": [],
-                "type": "distinct"
+                "type": "sum"
               }
             ]
           ],
           "tags": []
-        }
-      ],
-      "title": "Hourly walk heatmap",
-      "type": "marcusolsson-hourly-heatmap-panel"
-    },
-    {
-      "aliasColors": {
-        "steps.distinct": "light-orange"
-      },
-      "bars": true,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": {
-        "type": "influxdb",
-        "uid": "${DS_AMAZFIT_DATABASE}"
-      },
-      "fill": 1,
-      "fillGradient": 0,
-      "gridPos": {
-        "h": 9,
-        "w": 7,
-        "x": 10,
-        "y": 26
-      },
-      "hiddenSeries": false,
-      "id": 18,
-      "legend": {
-        "alignAsTable": true,
-        "avg": true,
-        "current": false,
-        "max": true,
-        "min": true,
-        "show": true,
-        "total": false,
-        "values": true
-      },
-      "lines": false,
-      "linewidth": 1,
-      "nullPointMode": "null",
-      "options": {
-        "alertThreshold": true
-      },
-      "percentage": false,
-      "pluginVersion": "9.3.2",
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
+        },
         {
+          "alias": "Fitbit hourly steps",
           "datasource": {
             "type": "influxdb",
-            "uid": "${DS_AMAZFIT_DATABASE}"
+            "uid": "${DS_FITBIT_DATABASE}"
           },
-          "groupBy": [
-            {
-              "params": [
-                "$__interval"
-              ],
-              "type": "time"
-            },
-            {
-              "params": [
-                "null"
-              ],
-              "type": "fill"
-            }
-          ],
-          "measurement": "steps",
-          "orderByTime": "ASC",
-          "policy": "default",
-          "query": "SELECT sum(\"steps\") FROM \"activity\" WHERE $timeFilter GROUP BY time(1d) fill(null)",
-          "queryType": "randomWalk",
+          "hide": false,
+          "query": "SELECT sum(\"value\") FROM \"hourly_steps\" WHERE $timeFilter GROUP BY time($__interval) fill(null)",
           "rawQuery": true,
-          "refId": "A",
-          "resultFormat": "time_series",
-          "select": [
-            [
-              {
-                "params": [
-                  "value"
-                ],
-                "type": "field"
-              },
-              {
-                "params": [],
-                "type": "distinct"
-              }
-            ]
-          ],
-          "tags": []
+          "refId": "B",
+          "resultFormat": "time_series"
         }
       ],
-      "thresholds": [],
+      "thresholds": [
+        {
+          "$$hashKey": "object:876",
+          "colorMode": "warning",
+          "fill": true,
+          "line": false,
+          "op": "gt",
+          "value": 1000,
+          "yaxis": "left"
+        }
+      ],
       "timeRegions": [],
-      "title": "Steps",
+      "title": "steps per minute",
       "tooltip": {
         "shared": true,
         "sort": 0,
         "value_type": "individual"
       },
+      "transparent": true,
       "type": "graph",
       "xaxis": {
         "mode": "time",
@@ -1467,11 +1819,13 @@
       },
       "yaxes": [
         {
+          "$$hashKey": "object:78",
           "format": "short",
           "logBase": 1,
           "show": true
         },
         {
+          "$$hashKey": "object:79",
           "format": "short",
           "logBase": 1,
           "show": true
@@ -1493,16 +1847,16 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": {
-        "type": "influxdb",
-        "uid": "${DS_AMAZFIT_DATABASE}"
+        "type": "datasource",
+        "uid": "-- Mixed --"
       },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
-        "h": 9,
-        "w": 7,
-        "x": 17,
-        "y": 26
+        "h": 15,
+        "w": 10,
+        "x": 14,
+        "y": 42
       },
       "hiddenSeries": false,
       "id": 22,
@@ -1731,6 +2085,54 @@
               "value": "true"
             }
           ]
+        },
+        {
+          "alias": "Deep",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_FITBIT_DATABASE}"
+          },
+          "hide": false,
+          "query": "SELECT distinct(\"minutes_deep\") FROM \"sleep\" WHERE is_main_sleep = true AND $timeFilter GROUP BY time($__interval) fill(null)",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series"
+        },
+        {
+          "alias": "Light",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_FITBIT_DATABASE}"
+          },
+          "hide": false,
+          "query": "SELECT distinct(\"minutes_light\") FROM \"sleep\" WHERE is_main_sleep = true AND $timeFilter GROUP BY time($__interval) fill(null)",
+          "rawQuery": true,
+          "refId": "B",
+          "resultFormat": "time_series"
+        },
+        {
+          "alias": "REM",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_FITBIT_DATABASE}"
+          },
+          "hide": false,
+          "query": "SELECT distinct(\"minutes_rem\") FROM \"sleep\" WHERE is_main_sleep = true AND $timeFilter GROUP BY time($__interval) fill(null)",
+          "rawQuery": true,
+          "refId": "C",
+          "resultFormat": "time_series"
+        },
+        {
+          "alias": "Awake",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_FITBIT_DATABASE}"
+          },
+          "hide": false,
+          "query": "SELECT distinct(\"minutes_awake\") FROM \"sleep\" WHERE is_main_sleep = true AND $timeFilter GROUP BY time($__interval) fill(null)",
+          "rawQuery": true,
+          "refId": "D",
+          "resultFormat": "time_series"
         }
       ],
       "thresholds": [
@@ -1751,6 +2153,7 @@
         "sort": 0,
         "value_type": "individual"
       },
+      "transparent": true,
       "type": "graph",
       "xaxis": {
         "mode": "time",
@@ -1777,36 +2180,36 @@
     },
     {
       "aliasColors": {
-        "Avg. Hourly Step Count": "super-light-yellow",
-        "hourly_steps.mean": "super-light-yellow",
-        "hourly_steps.moving_average": "light-purple"
+        "Steps Amazfit": "yellow",
+        "Steps Fitbit": "yellow",
+        "steps.distinct": "light-orange"
       },
       "bars": true,
       "dashLength": 10,
       "dashes": false,
       "datasource": {
-        "type": "influxdb",
-        "uid": "${DS_AMAZFIT_DATABASE}"
+        "type": "datasource",
+        "uid": "-- Mixed --"
       },
-      "fill": 0,
+      "fill": 1,
       "fillGradient": 0,
       "gridPos": {
         "h": 8,
-        "w": 24,
+        "w": 7,
         "x": 0,
-        "y": 35
+        "y": 49
       },
       "hiddenSeries": false,
-      "id": 4,
+      "id": 18,
       "legend": {
-        "alignAsTable": false,
-        "avg": false,
+        "alignAsTable": true,
+        "avg": true,
         "current": false,
-        "max": false,
-        "min": false,
+        "max": true,
+        "min": true,
         "show": true,
         "total": false,
-        "values": false
+        "values": true
       },
       "lines": false,
       "linewidth": 1,
@@ -1825,7 +2228,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "alias": "Avg. Hourly Step Count",
+          "alias": "Steps Amazfit",
           "datasource": {
             "type": "influxdb",
             "uid": "${DS_AMAZFIT_DATABASE}"
@@ -1834,6 +2237,306 @@
             {
               "params": [
                 "$__interval"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "null"
+              ],
+              "type": "fill"
+            }
+          ],
+          "measurement": "steps",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "query": "SELECT sum(\"steps\") FROM \"activity\" WHERE $timeFilter GROUP BY time(1d) fill(null)",
+          "queryType": "randomWalk",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "distinct"
+              }
+            ]
+          ],
+          "tags": []
+        },
+        {
+          "alias": "Steps Fitbit",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_FITBIT_DATABASE}"
+          },
+          "hide": false,
+          "query": "SELECT distinct(\"value\") FROM \"steps\" WHERE $timeFilter GROUP BY time($__interval) fill(null)",
+          "rawQuery": true,
+          "refId": "B",
+          "resultFormat": "time_series"
+        }
+      ],
+      "thresholds": [],
+      "timeRegions": [],
+      "title": "Steps",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "transparent": true,
+      "type": "graph",
+      "xaxis": {
+        "mode": "time",
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "logBase": 1,
+          "show": true
+        },
+        {
+          "format": "short",
+          "logBase": 1,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false
+      }
+    },
+    {
+      "aliasColors": {
+        "Distance Fitbit": "green",
+        "steps.distinct": "light-orange"
+      },
+      "bars": true,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": {
+        "type": "datasource",
+        "uid": "-- Mixed --"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "lengthm"
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 7,
+        "x": 7,
+        "y": 49
+      },
+      "hiddenSeries": false,
+      "id": 25,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": false,
+        "max": true,
+        "min": true,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": false,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "9.3.2",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "alias": "Distance Amazfit",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_AMAZFIT_DATABASE}"
+          },
+          "groupBy": [
+            {
+              "params": [
+                "$__interval"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "null"
+              ],
+              "type": "fill"
+            }
+          ],
+          "measurement": "steps",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "query": "SELECT sum(\"steps\")*0.7 FROM \"activity\" WHERE $timeFilter GROUP BY time(1d) fill(null)",
+          "queryType": "randomWalk",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "distinct"
+              }
+            ]
+          ],
+          "tags": []
+        },
+        {
+          "alias": "Distance Fitbit",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_FITBIT_DATABASE}"
+          },
+          "hide": false,
+          "query": "SELECT distinct(\"value\") *1609.34 FROM \"distance\" WHERE $timeFilter GROUP BY time($__interval) fill(null)",
+          "rawQuery": true,
+          "refId": "B",
+          "resultFormat": "time_series"
+        }
+      ],
+      "thresholds": [],
+      "timeRegions": [],
+      "title": "Distance",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "transparent": true,
+      "type": "graph",
+      "xaxis": {
+        "mode": "time",
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "lengthm",
+          "logBase": 1,
+          "show": true
+        },
+        {
+          "format": "short",
+          "logBase": 1,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false
+      }
+    },
+    {
+      "backgroundColor": "rgba(128,128,128,0.1)",
+      "colorMaps": [
+        {
+          "$$hashKey": "object:978",
+          "color": "#CCC",
+          "text": "N/A"
+        },
+        {
+          "$$hashKey": "object:981",
+          "color": "#8AB8FF",
+          "text": "Below"
+        },
+        {
+          "$$hashKey": "object:984",
+          "color": "#8F3BB8",
+          "text": "Above"
+        },
+        {
+          "$$hashKey": "object:826",
+          "color": "#8F3BB8",
+          "text": "true"
+        },
+        {
+          "$$hashKey": "object:829",
+          "color": "#8AB8FF",
+          "text": "false"
+        }
+      ],
+      "crosshairColor": "#8F070C",
+      "datasource": {
+        "type": "datasource",
+        "uid": "-- Mixed --"
+      },
+      "display": "timeline",
+      "expandFromQueryS": 0,
+      "extendLastValue": true,
+      "gridPos": {
+        "h": 4,
+        "w": 24,
+        "x": 0,
+        "y": 57
+      },
+      "highlightOnMouseover": true,
+      "id": 14,
+      "legendSortBy": "-ms",
+      "lineColor": "rgba(0,0,0,0.1)",
+      "metricNameColor": "#000000",
+      "pluginVersion": "9.3.2",
+      "rangeMaps": [
+        {
+          "$$hashKey": "object:807",
+          "from": "0",
+          "text": "Below",
+          "to": "249"
+        },
+        {
+          "$$hashKey": "object:809",
+          "from": "250",
+          "text": "Above",
+          "to": "5000"
+        }
+      ],
+      "rowHeight": 50,
+      "showLegend": true,
+      "showLegendNames": true,
+      "showLegendPercent": true,
+      "showLegendValues": true,
+      "showTimeAxis": true,
+      "targets": [
+        {
+          "alias": "Amazfit",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_AMAZFIT_DATABASE}"
+          },
+          "groupBy": [
+            {
+              "params": [
+                "1h"
               ],
               "type": "time"
             },
@@ -1865,279 +2568,12 @@
             ]
           ],
           "tags": []
-        }
-      ],
-      "thresholds": [
-        {
-          "$$hashKey": "object:876",
-          "colorMode": "warning",
-          "fill": true,
-          "line": false,
-          "op": "gt",
-          "value": 1000,
-          "yaxis": "left"
-        }
-      ],
-      "timeRegions": [],
-      "title": "steps per minute",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "transparent": true,
-      "type": "graph",
-      "xaxis": {
-        "mode": "time",
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "$$hashKey": "object:78",
-          "format": "short",
-          "logBase": 1,
-          "show": true
         },
         {
-          "$$hashKey": "object:79",
-          "format": "short",
-          "logBase": 1,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false
-      }
-    },
-    {
-      "backgroundColor": "rgba(128,128,128,0.1)",
-      "colorMaps": [
-        {
-          "$$hashKey": "object:3054",
-          "color": "#96D98D",
-          "text": "On Hand"
-        },
-        {
-          "$$hashKey": "object:4255",
-          "color": "#E02F44",
-          "text": "Off Hand"
-        }
-      ],
-      "crosshairColor": "#8F070C",
-      "datasource": {
-        "type": "influxdb",
-        "uid": "${DS_AMAZFIT_DATABASE}"
-      },
-      "display": "timeline",
-      "expandFromQueryS": 0,
-      "extendLastValue": true,
-      "gridPos": {
-        "h": 4,
-        "w": 24,
-        "x": 0,
-        "y": 43
-      },
-      "highlightOnMouseover": true,
-      "id": 6,
-      "legendSortBy": "-ms",
-      "lineColor": "rgba(0,0,0,0.1)",
-      "metricNameColor": "#000000",
-      "pluginVersion": "7.5.2",
-      "rangeMaps": [
-        {
-          "$$hashKey": "object:3059",
-          "from": "1",
-          "text": "On Hand",
-          "to": "300"
-        }
-      ],
-      "rowHeight": 50,
-      "showDistinctCount": false,
-      "showLegend": true,
-      "showLegendNames": true,
-      "showLegendPercent": true,
-      "showLegendValues": true,
-      "showTimeAxis": true,
-      "showTransitionCount": false,
-      "targets": [
-        {
-          "alias": "Heart rate",
+          "alias": "Fitbit",
           "datasource": {
             "type": "influxdb",
-            "uid": "${DS_AMAZFIT_DATABASE}"
-          },
-          "groupBy": [
-            {
-              "params": [
-                "$__interval"
-              ],
-              "type": "time"
-            },
-            {
-              "params": [
-                "null"
-              ],
-              "type": "fill"
-            }
-          ],
-          "hide": false,
-          "measurement": "heartrate",
-          "orderByTime": "ASC",
-          "policy": "default",
-          "query": "SELECT mean(value) FROM \"heartrate\" WHERE $timeFilter GROUP BY time(5m) fill(0)",
-          "queryType": "randomWalk",
-          "rawQuery": true,
-          "refId": "A",
-          "resultFormat": "time_series",
-          "select": [
-            [
-              {
-                "params": [
-                  "value"
-                ],
-                "type": "field"
-              },
-              {
-                "params": [],
-                "type": "mean"
-              },
-              {
-                "params": [
-                  "6"
-                ],
-                "type": "moving_average"
-              }
-            ]
-          ],
-          "tags": []
-        }
-      ],
-      "textSize": 24,
-      "textSizeTime": 12,
-      "timeOptions": [
-        {
-          "name": "Years",
-          "value": "years"
-        },
-        {
-          "name": "Months",
-          "value": "months"
-        },
-        {
-          "name": "Weeks",
-          "value": "weeks"
-        },
-        {
-          "name": "Days",
-          "value": "days"
-        },
-        {
-          "name": "Hours",
-          "value": "hours"
-        },
-        {
-          "name": "Minutes",
-          "value": "minutes"
-        },
-        {
-          "name": "Seconds",
-          "value": "seconds"
-        },
-        {
-          "name": "Milliseconds",
-          "value": "milliseconds"
-        }
-      ],
-      "timePrecision": {
-        "name": "Minutes",
-        "value": "minutes"
-      },
-      "timeTextColor": "#d8d9da",
-      "title": "Band wearing ",
-      "transparent": true,
-      "type": "natel-discrete-panel",
-      "units": "short",
-      "use12HourClock": false,
-      "useTimePrecision": false,
-      "valueMaps": [
-        {
-          "$$hashKey": "object:3057",
-          "op": "=",
-          "text": "Off Hand",
-          "value": "0"
-        }
-      ],
-      "valueTextColor": "#000000",
-      "writeAllValues": false,
-      "writeLastValue": false,
-      "writeMetricNames": false
-    },
-    {
-      "backgroundColor": "rgba(128,128,128,0.1)",
-      "colorMaps": [
-        {
-          "$$hashKey": "object:978",
-          "color": "#CCC",
-          "text": "N/A"
-        },
-        {
-          "$$hashKey": "object:981",
-          "color": "#8AB8FF",
-          "text": "Below"
-        },
-        {
-          "$$hashKey": "object:984",
-          "color": "#8F3BB8",
-          "text": "Above"
-        }
-      ],
-      "crosshairColor": "#8F070C",
-      "datasource": {
-        "type": "influxdb",
-        "uid": "${DS_AMAZFIT_DATABASE}"
-      },
-      "display": "timeline",
-      "expandFromQueryS": 0,
-      "extendLastValue": true,
-      "gridPos": {
-        "h": 3,
-        "w": 24,
-        "x": 0,
-        "y": 47
-      },
-      "highlightOnMouseover": true,
-      "id": 14,
-      "legendSortBy": "-ms",
-      "lineColor": "rgba(0,0,0,0.1)",
-      "metricNameColor": "#000000",
-      "pluginVersion": "9.3.2",
-      "rangeMaps": [
-        {
-          "$$hashKey": "object:807",
-          "from": "0",
-          "text": "Below",
-          "to": "249"
-        },
-        {
-          "$$hashKey": "object:809",
-          "from": "250",
-          "text": "Above",
-          "to": "5000"
-        }
-      ],
-      "rowHeight": 50,
-      "showLegend": true,
-      "showLegendNames": true,
-      "showLegendPercent": true,
-      "showLegendValues": true,
-      "showTimeAxis": true,
-      "targets": [
-        {
-          "alias": "Hourly steps > 250",
-          "datasource": {
-            "type": "influxdb",
-            "uid": "${DS_AMAZFIT_DATABASE}"
+            "uid": "${DS_FITBIT_DATABASE}"
           },
           "groupBy": [
             {
@@ -2153,17 +2589,19 @@
               "type": "fill"
             }
           ],
-          "measurement": "activity",
+          "hide": false,
+          "measurement": "hourly_steps",
           "orderByTime": "ASC",
           "policy": "default",
-          "queryType": "randomWalk",
-          "refId": "A",
+          "query": "SELECT distinct(\"greater than 250\") FROM \"hourly_steps_sum\" WHERE time < '2023-03-05 00:00:00' GROUP BY time($__interval) fill(null)",
+          "rawQuery": false,
+          "refId": "B",
           "resultFormat": "time_series",
           "select": [
             [
               {
                 "params": [
-                  "steps"
+                  "value"
                 ],
                 "type": "field"
               },
@@ -2218,6 +2656,23 @@
       },
       "timeTextColor": "#d8d9da",
       "title": "Hourly steps > 250",
+      "transformations": [
+        {
+          "id": "calculateField",
+          "options": {
+            "alias": "Merged",
+            "mode": "reduceRow",
+            "reduce": {
+              "include": [
+                "Amazfit",
+                "Fitbit"
+              ],
+              "reducer": "max"
+            },
+            "replaceFields": true
+          }
+        }
+      ],
       "type": "natel-discrete-panel",
       "units": "short",
       "use12HourClock": false,
@@ -2228,6 +2683,18 @@
           "op": "=",
           "text": "Below",
           "value": "null"
+        },
+        {
+          "$$hashKey": "object:1129",
+          "op": "=",
+          "text": "Below",
+          "value": "false"
+        },
+        {
+          "$$hashKey": "object:1131",
+          "op": "=",
+          "text": "Above",
+          "value": "true"
         }
       ],
       "valueTextColor": "#000000",
@@ -2244,13 +2711,13 @@
     "list": []
   },
   "time": {
-    "from": "now-7d",
+    "from": "now-20d",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "Amazfit Dashboard",
   "uid": "p_s-Kp-4k",
-  "version": 17,
+  "version": 46,
   "weekStart": ""
 }
