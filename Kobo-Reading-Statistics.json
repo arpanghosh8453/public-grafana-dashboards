@@ -15,7 +15,7 @@
       "type": "grafana",
       "id": "grafana",
       "name": "Grafana",
-      "version": "10.4.3"
+      "version": "11.0.0"
     },
     {
       "type": "datasource",
@@ -93,32 +93,36 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "red",
+                "color": "super-light-blue",
                 "value": null
               },
               {
                 "color": "light-red",
-                "value": 20
+                "value": 3600
+              },
+              {
+                "color": "light-red",
+                "value": 7200
               },
               {
                 "color": "orange",
-                "value": 30
+                "value": 10800
               },
               {
                 "color": "light-yellow",
-                "value": 40
+                "value": 14400
               },
               {
                 "color": "light-green",
-                "value": 60
+                "value": 21600
               },
               {
                 "color": "semi-dark-green",
-                "value": 80
+                "value": 28800
               },
               {
-                "color": "blue",
-                "value": 100
+                "color": "dark-green",
+                "value": 36000
               }
             ]
           }
@@ -133,8 +137,7 @@
               {
                 "id": "custom.cellOptions",
                 "value": {
-                  "mode": "lcd",
-                  "type": "gauge"
+                  "type": "color-background"
                 }
               },
               {
@@ -152,7 +155,9 @@
               {
                 "id": "custom.cellOptions",
                 "value": {
-                  "type": "color-background"
+                  "mode": "gradient",
+                  "type": "gauge",
+                  "valueDisplayMode": "color"
                 }
               },
               {
@@ -161,7 +166,21 @@
               },
               {
                 "id": "custom.width",
-                "value": 169
+                "value": 354
+              },
+              {
+                "id": "max",
+                "value": 100
+              },
+              {
+                "id": "min",
+                "value": 0
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "continuous-RdYlGr"
+                }
               }
             ]
           },
@@ -173,7 +192,14 @@
             "properties": [
               {
                 "id": "custom.width",
-                "value": 418
+                "value": 392
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "light-green",
+                  "mode": "fixed"
+                }
               }
             ]
           },
@@ -224,11 +250,40 @@
                 "value": "auto"
               }
             ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Authors"
+            },
+            "properties": [
+              {
+                "id": "custom.align",
+                "value": "auto"
+              },
+              {
+                "id": "custom.width",
+                "value": 211
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-text"
+                }
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "light-orange",
+                  "mode": "fixed"
+                }
+              }
+            ]
           }
         ]
       },
       "gridPos": {
-        "h": 7,
+        "h": 12,
         "w": 24,
         "x": 0,
         "y": 0
@@ -254,7 +309,7 @@
           }
         ]
       },
-      "pluginVersion": "10.4.3",
+      "pluginVersion": "11.0.0",
       "targets": [
         {
           "alias": "Title",
@@ -273,6 +328,31 @@
               {
                 "params": [
                   "title"
+                ],
+                "type": "field"
+              }
+            ]
+          ],
+          "tags": []
+        },
+        {
+          "alias": "Authors",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_READING_STATS}"
+          },
+          "groupBy": [],
+          "hide": false,
+          "measurement": "summary",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "E",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "authors"
                 ],
                 "type": "field"
               }
@@ -430,7 +510,7 @@
         "h": 6,
         "w": 24,
         "x": 0,
-        "y": 7
+        "y": 12
       },
       "id": 1,
       "options": {
@@ -441,6 +521,7 @@
           "showLegend": true
         },
         "tooltip": {
+          "maxHeight": 600,
           "mode": "single",
           "sort": "none"
         }
@@ -517,20 +598,6 @@
           "mappings": [
             {
               "options": {
-                "N/A": {
-                  "color": "#00000000",
-                  "index": 2
-                },
-                "The Housemaid": {
-                  "color": "red",
-                  "index": 3,
-                  "text": "The Housemaid"
-                },
-                "The Housemaid's Secret": {
-                  "color": "blue",
-                  "index": 4,
-                  "text": "The Housemaid's Secret"
-                },
                 "null": {
                   "index": 1,
                   "text": "N/A"
@@ -540,12 +607,274 @@
             },
             {
               "options": {
+                "from": 0,
                 "result": {
                   "index": 0,
                   "text": "N/A"
-                }
+                },
+                "to": 0
               },
               "type": "range"
+            },
+            {
+              "options": {
+                "pattern": ".*a$",
+                "result": {
+                  "color": "dark-red",
+                  "index": 2
+                }
+              },
+              "type": "regex"
+            },
+            {
+              "options": {
+                "pattern": ".*b$",
+                "result": {
+                  "color": "semi-dark-red",
+                  "index": 3
+                }
+              },
+              "type": "regex"
+            },
+            {
+              "options": {
+                "pattern": ".*c$",
+                "result": {
+                  "color": "red",
+                  "index": 4
+                }
+              },
+              "type": "regex"
+            },
+            {
+              "options": {
+                "pattern": ".*d$",
+                "result": {
+                  "color": "light-red",
+                  "index": 5
+                }
+              },
+              "type": "regex"
+            },
+            {
+              "options": {
+                "pattern": ".*e$",
+                "result": {
+                  "color": "super-light-red",
+                  "index": 6
+                }
+              },
+              "type": "regex"
+            },
+            {
+              "options": {
+                "pattern": ".*f$",
+                "result": {
+                  "color": "dark-orange",
+                  "index": 7
+                }
+              },
+              "type": "regex"
+            },
+            {
+              "options": {
+                "pattern": ".*g$",
+                "result": {
+                  "color": "semi-dark-orange",
+                  "index": 8
+                }
+              },
+              "type": "regex"
+            },
+            {
+              "options": {
+                "pattern": ".*h$",
+                "result": {
+                  "color": "orange",
+                  "index": 9
+                }
+              },
+              "type": "regex"
+            },
+            {
+              "options": {
+                "pattern": ".*i$",
+                "result": {
+                  "color": "#865151",
+                  "index": 10
+                }
+              },
+              "type": "regex"
+            },
+            {
+              "options": {
+                "pattern": ".*j$",
+                "result": {
+                  "color": "super-light-orange",
+                  "index": 11
+                }
+              },
+              "type": "regex"
+            },
+            {
+              "options": {
+                "pattern": ".*k$",
+                "result": {
+                  "color": "dark-yellow",
+                  "index": 12
+                }
+              },
+              "type": "regex"
+            },
+            {
+              "options": {
+                "pattern": ".*l$",
+                "result": {
+                  "color": "dark-green",
+                  "index": 13
+                }
+              },
+              "type": "regex"
+            },
+            {
+              "options": {
+                "pattern": ".*m$",
+                "result": {
+                  "color": "semi-dark-green",
+                  "index": 14
+                }
+              },
+              "type": "regex"
+            },
+            {
+              "options": {
+                "pattern": ".*n$",
+                "result": {
+                  "color": "super-light-yellow",
+                  "index": 15
+                }
+              },
+              "type": "regex"
+            },
+            {
+              "options": {
+                "pattern": ".*o$",
+                "result": {
+                  "color": "green",
+                  "index": 16
+                }
+              },
+              "type": "regex"
+            },
+            {
+              "options": {
+                "pattern": ".*p$",
+                "result": {
+                  "color": "light-green",
+                  "index": 17
+                }
+              },
+              "type": "regex"
+            },
+            {
+              "options": {
+                "pattern": ".*q$",
+                "result": {
+                  "color": "super-light-green",
+                  "index": 18
+                }
+              },
+              "type": "regex"
+            },
+            {
+              "options": {
+                "pattern": ".*r$",
+                "result": {
+                  "color": "dark-blue",
+                  "index": 19
+                }
+              },
+              "type": "regex"
+            },
+            {
+              "options": {
+                "pattern": ".*s$",
+                "result": {
+                  "color": "semi-dark-blue",
+                  "index": 20
+                }
+              },
+              "type": "regex"
+            },
+            {
+              "options": {
+                "pattern": ".*t$",
+                "result": {
+                  "color": "blue",
+                  "index": 21
+                }
+              },
+              "type": "regex"
+            },
+            {
+              "options": {
+                "pattern": ".*u$",
+                "result": {
+                  "color": "light-blue",
+                  "index": 22
+                }
+              },
+              "type": "regex"
+            },
+            {
+              "options": {
+                "pattern": ".*v$",
+                "result": {
+                  "color": "super-light-blue",
+                  "index": 23
+                }
+              },
+              "type": "regex"
+            },
+            {
+              "options": {
+                "pattern": ".*w$",
+                "result": {
+                  "color": "dark-purple",
+                  "index": 24
+                }
+              },
+              "type": "regex"
+            },
+            {
+              "options": {
+                "pattern": ".*x$",
+                "result": {
+                  "color": "semi-dark-purple",
+                  "index": 25
+                }
+              },
+              "type": "regex"
+            },
+            {
+              "options": {
+                "pattern": ".*y$",
+                "result": {
+                  "color": "purple",
+                  "index": 26
+                }
+              },
+              "type": "regex"
+            },
+            {
+              "options": {
+                "pattern": ".*z$",
+                "result": {
+                  "color": "light-purple",
+                  "index": 27
+                }
+              },
+              "type": "regex"
             }
           ],
           "thresholds": {
@@ -569,7 +898,7 @@
         "h": 4,
         "w": 24,
         "x": 0,
-        "y": 13
+        "y": 18
       },
       "id": 7,
       "options": {
@@ -583,6 +912,7 @@
         "rowHeight": 0.9,
         "showValue": "auto",
         "tooltip": {
+          "maxHeight": 600,
           "mode": "single",
           "sort": "none"
         }
@@ -683,16 +1013,28 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 9,
-        "w": 12,
+        "h": 8,
+        "w": 8,
         "x": 0,
-        "y": 17
+        "y": 22
       },
       "id": 3,
       "options": {
         "from": "0",
         "legendGradientQuality": "high",
-        "regions": [],
+        "regions": [
+          {
+            "color": "#c4c53640",
+            "end": {
+              "hour": 18,
+              "minute": 0
+            },
+            "start": {
+              "hour": 6,
+              "minute": 0
+            }
+          }
+        ],
         "showCellBorder": false,
         "showLegend": false,
         "showTooltip": true,
@@ -888,10 +1230,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 9,
-        "w": 12,
-        "x": 12,
-        "y": 17
+        "h": 8,
+        "w": 8,
+        "x": 8,
+        "y": 22
       },
       "id": 4,
       "options": {
@@ -902,6 +1244,7 @@
           "showLegend": true
         },
         "tooltip": {
+          "maxHeight": 600,
           "mode": "single",
           "sort": "none"
         }
@@ -951,10 +1294,139 @@
         }
       ],
       "title": "Total Daily Reading",
+      "transparent": true,
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_READING_STATS}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "bars",
+            "fillOpacity": 100,
+            "gradientMode": "hue",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 16,
+        "y": 22
+      },
+      "id": 8,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "maxHeight": 600,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "alias": "Page Count",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_READING_STATS}"
+          },
+          "groupBy": [
+            {
+              "params": [
+                "1d"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "null"
+              ],
+              "type": "fill"
+            }
+          ],
+          "measurement": "intraday",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "page"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "count"
+              }
+            ]
+          ],
+          "tags": [],
+          "tz": "Asia/Kolkata"
+        }
+      ],
+      "title": "Page Count",
+      "transparent": true,
       "type": "timeseries"
     }
   ],
-  "refresh": "",
   "schemaVersion": 39,
   "tags": [],
   "templating": {
@@ -964,10 +1436,11 @@
     "from": "now-7d",
     "to": "now"
   },
+  "timeRangeUpdatedDuringEditOrView": false,
   "timepicker": {},
   "timezone": "browser",
   "title": "Kobo-Reading-Statistics",
   "uid": "fdpil8p25qyv4e",
-  "version": 49,
+  "version": 67,
   "weekStart": ""
 }
