@@ -24,15 +24,21 @@
       "version": ""
     },
     {
+      "type": "panel",
+      "id": "geomap",
+      "name": "Geomap",
+      "version": ""
+    },
+    {
       "type": "grafana",
       "id": "grafana",
       "name": "Grafana",
-      "version": "10.2.3"
+      "version": "11.5.2"
     },
     {
       "type": "panel",
-      "id": "graph",
-      "name": "Graph (old)",
+      "id": "histogram",
+      "name": "Histogram",
       "version": ""
     },
     {
@@ -49,12 +55,6 @@
     },
     {
       "type": "panel",
-      "id": "natel-discrete-panel",
-      "name": "Discrete",
-      "version": "0.1.1"
-    },
-    {
-      "type": "panel",
       "id": "piechart",
       "name": "Pie chart",
       "version": ""
@@ -67,8 +67,20 @@
     },
     {
       "type": "panel",
+      "id": "state-timeline",
+      "name": "State timeline",
+      "version": ""
+    },
+    {
+      "type": "panel",
       "id": "table",
       "name": "Table",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "text",
+      "name": "Text",
       "version": ""
     },
     {
@@ -105,7 +117,6 @@
   "graphTooltip": 0,
   "id": null,
   "links": [],
-  "liveNow": false,
   "panels": [
     {
       "collapsed": false,
@@ -119,6 +130,307 @@
       "panels": [],
       "title": "Recent Data",
       "type": "row"
+    },
+    {
+      "gridPos": {
+        "h": 3,
+        "w": 3,
+        "x": 0,
+        "y": 1
+      },
+      "id": 76,
+      "options": {
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "<center><a href='https://ko-fi.com/A0A84F3DP' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://storage.ko-fi.com/cdn/kofi2.png?v=6' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a></center>  ",
+        "mode": "html"
+      },
+      "pluginVersion": "11.5.2",
+      "title": "Support Me!",
+      "transparent": true,
+      "type": "text"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_HEALTH_STATS}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds",
+            "seriesBy": "last"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 20,
+            "gradientMode": "scheme",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": 3600000,
+            "lineInterpolation": "smooth",
+            "lineStyle": {
+              "fill": "solid"
+            },
+            "lineWidth": 1,
+            "pointSize": 4,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "area"
+            }
+          },
+          "fieldMinMax": true,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "semi-dark-blue",
+                "value": null
+              },
+              {
+                "color": "semi-dark-green",
+                "value": 60
+              },
+              {
+                "color": "dark-yellow",
+                "value": 95
+              },
+              {
+                "color": "semi-dark-red",
+                "value": 120
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 21,
+        "x": 3,
+        "y": 1
+      },
+      "id": 66,
+      "options": {
+        "legend": {
+          "calcs": [
+            "min",
+            "max",
+            "mean"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "11.5.2",
+      "targets": [
+        {
+          "alias": "Heart rate",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_HEALTH_STATS}"
+          },
+          "groupBy": [
+            {
+              "params": [
+                "$interval"
+              ],
+              "type": "time"
+            }
+          ],
+          "hide": false,
+          "measurement": "HeartRate_Intraday",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "query": "SELECT moving_average(mean(\"value\"), 6) FROM \"HeartRate_Intraday\" WHERE $timeFilter GROUP BY time($__interval) fill(null)",
+          "queryType": "randomWalk",
+          "rawQuery": false,
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "mean"
+              }
+            ]
+          ],
+          "tags": []
+        }
+      ],
+      "timeFrom": "24h",
+      "title": "Heart Rate",
+      "transformations": [
+        {
+          "id": "calculateField",
+          "options": {
+            "alias": "Heart Rate",
+            "mode": "windowFunctions",
+            "reduce": {
+              "reducer": "sum"
+            },
+            "replaceFields": true,
+            "window": {
+              "field": "Heart rate",
+              "reducer": "mean",
+              "windowAlignment": "centered",
+              "windowSize": 0.005,
+              "windowSizeMode": "percentage"
+            }
+          }
+        },
+        {
+          "id": "filterByValue",
+          "options": {
+            "filters": [
+              {
+                "config": {
+                  "id": "notEqual",
+                  "options": {
+                    "value": "0"
+                  }
+                },
+                "fieldName": "Heart Rate"
+              }
+            ],
+            "match": "any",
+            "type": "include"
+          }
+        }
+      ],
+      "transparent": true,
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_HEALTH_STATS}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "light-blue",
+                "value": 1800000000000
+              },
+              {
+                "color": "#EAB839",
+                "value": 3600000000000
+              },
+              {
+                "color": "red",
+                "value": 5400000000000
+              }
+            ]
+          },
+          "unit": "dateTimeFromNow"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 3,
+        "x": 0,
+        "y": 4
+      },
+      "hideTimeOverride": true,
+      "id": 65,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "/^Time$/",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.5.2",
+      "targets": [
+        {
+          "groupBy": [],
+          "measurement": "HeartRate_Intraday",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "last"
+              }
+            ]
+          ],
+          "tags": [],
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_HEALTH_STATS}"
+          }
+        }
+      ],
+      "timeFrom": "24h",
+      "title": "Last Sync ",
+      "transparent": true,
+      "type": "stat"
     },
     {
       "datasource": {
@@ -173,10 +485,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 6,
+        "h": 4,
         "w": 3,
         "x": 0,
-        "y": 1
+        "y": 7
       },
       "hideTimeOverride": true,
       "id": 59,
@@ -185,6 +497,7 @@
         "graphMode": "area",
         "justifyMode": "auto",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
             "last"
@@ -192,10 +505,11 @@
           "fields": "",
           "values": false
         },
+        "showPercentChange": false,
         "textMode": "value",
         "wideLayout": true
       },
-      "pluginVersion": "10.2.3",
+      "pluginVersion": "11.5.2",
       "targets": [
         {
           "alias": "Battery remaining",
@@ -234,66 +548,107 @@
       "type": "stat"
     },
     {
-      "aliasColors": {
-        "Above 100": "dark-red",
-        "Above 105": "dark-red",
-        "Above 110": "dark-red",
-        "Above 95": "dark-red",
-        "Below RHR": "dark-green",
-        "Heart rate": "light-yellow"
-      },
-      "bars": true,
-      "dashLength": 10,
-      "dashes": false,
       "datasource": {
         "type": "influxdb",
         "uid": "${DS_HEALTH_STATS}"
       },
       "fieldConfig": {
         "defaults": {
-          "unit": "short"
+          "color": {
+            "mode": "thresholds",
+            "seriesBy": "last"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "bars",
+            "fillOpacity": 18,
+            "gradientMode": "scheme",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": 60000,
+            "lineInterpolation": "smooth",
+            "lineStyle": {
+              "fill": "solid"
+            },
+            "lineWidth": 1,
+            "pointSize": 3,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "area"
+            }
+          },
+          "fieldMinMax": true,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "semi-dark-blue",
+                "value": null
+              },
+              {
+                "color": "semi-dark-green",
+                "value": 5
+              },
+              {
+                "color": "dark-yellow",
+                "value": 25
+              },
+              {
+                "color": "semi-dark-red",
+                "value": 65
+              }
+            ]
+          },
+          "unit": "none"
         },
         "overrides": []
       },
-      "fill": 1,
-      "fillGradient": 0,
       "gridPos": {
-        "h": 10,
+        "h": 8,
         "w": 21,
         "x": 3,
-        "y": 1
+        "y": 10
       },
-      "hiddenSeries": false,
-      "id": 61,
-      "legend": {
-        "alignAsTable": true,
-        "avg": true,
-        "current": false,
-        "max": true,
-        "min": true,
-        "rightSide": false,
-        "show": true,
-        "total": false,
-        "values": true
-      },
-      "lines": false,
-      "linewidth": 1,
-      "nullPointMode": "null",
+      "id": 75,
       "options": {
-        "alertThreshold": true
+        "legend": {
+          "calcs": [
+            "min",
+            "max",
+            "mean"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
       },
-      "percentage": false,
-      "pluginVersion": "10.2.3",
-      "pointradius": 0.5,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
+      "pluginVersion": "11.5.2",
       "targets": [
         {
-          "alias": "Heart rate",
+          "alias": "Intraday Steps",
           "datasource": {
             "type": "influxdb",
             "uid": "${DS_HEALTH_STATS}"
@@ -301,7 +656,184 @@
           "groupBy": [
             {
               "params": [
-                "$__interval"
+                "1m"
+              ],
+              "type": "time"
+            }
+          ],
+          "hide": false,
+          "measurement": "Steps_Intraday",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "query": "SELECT moving_average(mean(\"value\"), 6) FROM \"HeartRate_Intraday\" WHERE $timeFilter GROUP BY time($__interval) fill(null)",
+          "queryType": "randomWalk",
+          "rawQuery": false,
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "mean"
+              }
+            ]
+          ],
+          "tags": []
+        }
+      ],
+      "timeFrom": "24h",
+      "title": "Intraday Steps",
+      "transformations": [
+        {
+          "id": "calculateField",
+          "options": {
+            "alias": "Intraday Steps",
+            "mode": "windowFunctions",
+            "reduce": {
+              "reducer": "sum"
+            },
+            "replaceFields": true,
+            "window": {
+              "field": "Intraday Steps",
+              "reducer": "mean",
+              "windowAlignment": "centered",
+              "windowSize": 0.003,
+              "windowSizeMode": "percentage"
+            }
+          }
+        },
+        {
+          "id": "filterByValue",
+          "options": {
+            "filters": [
+              {
+                "config": {
+                  "id": "notEqual",
+                  "options": {
+                    "value": "0"
+                  }
+                },
+                "fieldName": "Intraday Steps"
+              }
+            ],
+            "match": "any",
+            "type": "include"
+          }
+        }
+      ],
+      "transparent": true,
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_HEALTH_STATS}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "fillOpacity": 52,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineWidth": 1,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            }
+          },
+          "fieldMinMax": true,
+          "mappings": [],
+          "max": 140,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "light-blue",
+                "value": null
+              },
+              {
+                "color": "semi-dark-green",
+                "value": 60
+              },
+              {
+                "color": "dark-yellow",
+                "value": 95
+              },
+              {
+                "color": "semi-dark-red",
+                "value": 120
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Heart rate histogram > 110"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "semi-dark-red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 3,
+        "x": 0,
+        "y": 11
+      },
+      "hideTimeOverride": true,
+      "id": 67,
+      "options": {
+        "bucketOffset": 0,
+        "bucketSize": 2,
+        "combine": false,
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "11.5.2",
+      "targets": [
+        {
+          "alias": "Heart rate histogram",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_HEALTH_STATS}"
+          },
+          "groupBy": [
+            {
+              "params": [
+                "$interval"
               ],
               "type": "time"
             },
@@ -313,10 +845,10 @@
             }
           ],
           "hide": false,
-          "measurement": "heartrate",
+          "measurement": "HeartRate_Intraday",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT moving_average(mean(\"value\"), 6) FROM \"HeartRate_Intraday\" WHERE $timeFilter GROUP BY time($__interval) fill(null)",
+          "query": "select mean_value from (SELECT mean(\"value\") as mean_value FROM \"HeartRate_Intraday\" WHERE $timeFilter GROUP BY time(1m) fill(null)) where mean_value <= 96",
           "queryType": "randomWalk",
           "rawQuery": true,
           "refId": "A",
@@ -332,42 +864,23 @@
               {
                 "params": [],
                 "type": "mean"
-              },
-              {
-                "params": [
-                  "6"
-                ],
-                "type": "moving_average"
               }
             ]
           ],
           "tags": []
         },
         {
-          "alias": "Above 95",
+          "alias": "Heart rate histogram > 96",
           "datasource": {
             "type": "influxdb",
             "uid": "${DS_HEALTH_STATS}"
           },
-          "groupBy": [
-            {
-              "params": [
-                "$__interval"
-              ],
-              "type": "time"
-            },
-            {
-              "params": [
-                "null"
-              ],
-              "type": "fill"
-            }
-          ],
+          "groupBy": [],
           "hide": false,
-          "measurement": "heartrate",
+          "measurement": "HeartRate_Intraday",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "select above from (SELECT moving_average(mean(\"value\"), 6) as above FROM \"HeartRate_Intraday\" WHERE $timeFilter GROUP BY time($__interval) fill(null)) where above > 95",
+          "query": "select mean_value from (SELECT mean(\"value\") as mean_value FROM \"HeartRate_Intraday\" WHERE $timeFilter GROUP BY time(1m) fill(null)) where mean_value > 96",
           "queryType": "randomWalk",
           "rawQuery": true,
           "refId": "B",
@@ -379,52 +892,23 @@
                   "value"
                 ],
                 "type": "field"
-              },
-              {
-                "params": [],
-                "type": "mean"
-              },
-              {
-                "params": [
-                  "8"
-                ],
-                "type": "moving_average"
               }
             ]
           ],
-          "tags": [
-            {
-              "key": "value",
-              "operator": "=~",
-              "value": "/^$RHR$/"
-            }
-          ]
+          "tags": []
         },
         {
-          "alias": "Above 105",
+          "alias": "Heart rate histogram < 60",
           "datasource": {
             "type": "influxdb",
             "uid": "${DS_HEALTH_STATS}"
           },
-          "groupBy": [
-            {
-              "params": [
-                "$__interval"
-              ],
-              "type": "time"
-            },
-            {
-              "params": [
-                "null"
-              ],
-              "type": "fill"
-            }
-          ],
-          "hide": true,
-          "measurement": "heartrate",
+          "groupBy": [],
+          "hide": false,
+          "measurement": "HeartRate_Intraday",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "select above from (SELECT moving_average(mean(\"value\"), 6) as above FROM \"HeartRate_Intraday\" WHERE $timeFilter GROUP BY time($__interval) fill(null)) where above > 105",
+          "query": "select mean_value from (SELECT mean(\"value\") as mean_value FROM \"HeartRate_Intraday\" WHERE $timeFilter GROUP BY time(1m) fill(null)) where mean_value < 60",
           "queryType": "randomWalk",
           "rawQuery": true,
           "refId": "C",
@@ -436,52 +920,23 @@
                   "value"
                 ],
                 "type": "field"
-              },
-              {
-                "params": [],
-                "type": "mean"
-              },
-              {
-                "params": [
-                  "8"
-                ],
-                "type": "moving_average"
               }
             ]
           ],
-          "tags": [
-            {
-              "key": "value",
-              "operator": "=~",
-              "value": "/^$RHR$/"
-            }
-          ]
+          "tags": []
         },
         {
-          "alias": "Below RHR",
+          "alias": "Heart rate histogram > 110",
           "datasource": {
             "type": "influxdb",
             "uid": "${DS_HEALTH_STATS}"
           },
-          "groupBy": [
-            {
-              "params": [
-                "$__interval"
-              ],
-              "type": "time"
-            },
-            {
-              "params": [
-                "null"
-              ],
-              "type": "fill"
-            }
-          ],
+          "groupBy": [],
           "hide": false,
-          "measurement": "heartrate",
+          "measurement": "HeartRate_Intraday",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "select below from (SELECT moving_average(mean(\"value\"), 6) as below FROM \"HeartRate_Intraday\" WHERE $timeFilter GROUP BY time($__interval) fill(null)) where below < 60",
+          "query": "select mean_value from (SELECT mean(\"value\") as mean_value FROM \"HeartRate_Intraday\" WHERE $timeFilter GROUP BY time(1m) fill(null)) where mean_value > 110",
           "queryType": "randomWalk",
           "rawQuery": true,
           "refId": "D",
@@ -493,61 +948,16 @@
                   "value"
                 ],
                 "type": "field"
-              },
-              {
-                "params": [],
-                "type": "mean"
-              },
-              {
-                "params": [
-                  "8"
-                ],
-                "type": "moving_average"
               }
             ]
           ],
-          "tags": [
-            {
-              "key": "value",
-              "operator": "=~",
-              "value": "/^$RHR$/"
-            }
-          ]
+          "tags": []
         }
       ],
-      "thresholds": [],
       "timeFrom": "24h",
-      "timeRegions": [],
-      "title": "Heart Rate",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
+      "title": "Heart Rate Distribution",
       "transparent": true,
-      "type": "graph",
-      "xaxis": {
-        "mode": "time",
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "$$hashKey": "object:573",
-          "format": "short",
-          "logBase": 1,
-          "show": true
-        },
-        {
-          "$$hashKey": "object:574",
-          "format": "short",
-          "logBase": 1,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false
-      }
+      "type": "histogram"
     },
     {
       "datasource": {
@@ -590,10 +1000,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 6,
+        "h": 5,
         "w": 3,
         "x": 0,
-        "y": 7
+        "y": 15
       },
       "id": 27,
       "options": {
@@ -612,7 +1022,7 @@
         "sizing": "auto",
         "text": {}
       },
-      "pluginVersion": "10.2.3",
+      "pluginVersion": "11.5.2",
       "targets": [
         {
           "datasource": {
@@ -651,282 +1061,6 @@
     },
     {
       "datasource": {
-        "type": "datasource",
-        "uid": "-- Mixed --"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 1,
-            "drawStyle": "bars",
-            "fillOpacity": 100,
-            "gradientMode": "opacity",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "linear",
-            "lineWidth": 0,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "never",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "short"
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Heart rate"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "light-yellow",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 6,
-        "w": 21,
-        "x": 3,
-        "y": 11
-      },
-      "hideTimeOverride": false,
-      "id": 3,
-      "options": {
-        "legend": {
-          "calcs": [
-            "mean",
-            "max",
-            "min"
-          ],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": false
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "none"
-        }
-      },
-      "pluginVersion": "9.3.2",
-      "targets": [
-        {
-          "alias": "Steps",
-          "datasource": {
-            "type": "influxdb",
-            "uid": "${DS_HEALTH_STATS}"
-          },
-          "groupBy": [
-            {
-              "params": [
-                "$__interval"
-              ],
-              "type": "time"
-            },
-            {
-              "params": [
-                "null"
-              ],
-              "type": "fill"
-            }
-          ],
-          "hide": false,
-          "measurement": "heartrate",
-          "orderByTime": "ASC",
-          "policy": "default",
-          "query": "SELECT moving_average(mean(\"value\"), 6) FROM \"Steps_Intraday\" WHERE $timeFilter GROUP BY time($__interval) fill(null)\n",
-          "queryType": "randomWalk",
-          "rawQuery": true,
-          "refId": "A",
-          "resultFormat": "time_series",
-          "select": [
-            [
-              {
-                "params": [
-                  "value"
-                ],
-                "type": "field"
-              },
-              {
-                "params": [],
-                "type": "mean"
-              },
-              {
-                "params": [
-                  "6"
-                ],
-                "type": "moving_average"
-              }
-            ]
-          ],
-          "tags": []
-        }
-      ],
-      "timeFrom": "24h",
-      "title": "Hourly Steps",
-      "transparent": true,
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "datasource",
-        "uid": "-- Mixed --"
-      },
-      "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "displayName": "Steps 👟",
-          "mappings": [],
-          "max": 15000,
-          "min": 0,
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "semi-dark-red",
-                "value": null
-              },
-              {
-                "color": "light-orange",
-                "value": 5000
-              },
-              {
-                "color": "semi-dark-green",
-                "value": 10000
-              },
-              {
-                "color": "semi-dark-blue",
-                "value": 13000
-              }
-            ]
-          },
-          "unit": "short"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 6,
-        "w": 3,
-        "x": 0,
-        "y": 13
-      },
-      "id": 30,
-      "options": {
-        "minVizHeight": 75,
-        "minVizWidth": 75,
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "last"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showThresholdLabels": false,
-        "showThresholdMarkers": true,
-        "sizing": "auto",
-        "text": {}
-      },
-      "pluginVersion": "10.2.3",
-      "targets": [
-        {
-          "datasource": {
-            "type": "influxdb",
-            "uid": "${DS_HEALTH_STATS}"
-          },
-          "groupBy": [
-            {
-              "params": [
-                "1d"
-              ],
-              "type": "time"
-            },
-            {
-              "params": [
-                "0"
-              ],
-              "type": "fill"
-            }
-          ],
-          "measurement": "Steps_Intraday",
-          "orderByTime": "ASC",
-          "policy": "default",
-          "refId": "A",
-          "resultFormat": "time_series",
-          "select": [
-            [
-              {
-                "params": [
-                  "value"
-                ],
-                "type": "field"
-              },
-              {
-                "params": [],
-                "type": "sum"
-              }
-            ]
-          ],
-          "tags": [],
-          "tz": "$TimeZone"
-        }
-      ],
-      "title": "Today's Steps",
-      "transformations": [
-        {
-          "id": "merge",
-          "options": {}
-        }
-      ],
-      "transparent": true,
-      "type": "gauge"
-    },
-    {
-      "datasource": {
         "type": "influxdb",
         "uid": "${DS_HEALTH_STATS}"
       },
@@ -945,6 +1079,7 @@
             "axisSoftMax": 100,
             "axisSoftMin": 90,
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 41,
             "gradientMode": "opacity",
@@ -986,7 +1121,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -1075,11 +1211,12 @@
         ]
       },
       "gridPos": {
-        "h": 7,
+        "h": 6,
         "w": 21,
         "x": 3,
-        "y": 17
+        "y": 18
       },
+      "hideTimeOverride": true,
       "id": 36,
       "options": {
         "graph": {},
@@ -1094,11 +1231,13 @@
           "showLegend": true
         },
         "tooltip": {
+          "hideZeros": false,
+          "maxHeight": 600,
           "mode": "single",
           "sort": "none"
         }
       },
-      "pluginVersion": "7.5.2",
+      "pluginVersion": "11.5.2",
       "targets": [
         {
           "alias": "SpO2 Intraday",
@@ -1158,6 +1297,287 @@
           "color": {
             "mode": "thresholds"
           },
+          "displayName": "Steps 👟",
+          "mappings": [],
+          "max": 15000,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "semi-dark-red",
+                "value": null
+              },
+              {
+                "color": "light-orange",
+                "value": 5000
+              },
+              {
+                "color": "semi-dark-green",
+                "value": 10000
+              },
+              {
+                "color": "semi-dark-blue",
+                "value": 13000
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 3,
+        "x": 0,
+        "y": 20
+      },
+      "id": 30,
+      "options": {
+        "minVizHeight": 75,
+        "minVizWidth": 75,
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "last"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "sizing": "auto",
+        "text": {}
+      },
+      "pluginVersion": "11.5.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_HEALTH_STATS}"
+          },
+          "groupBy": [
+            {
+              "params": [
+                "1d"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "0"
+              ],
+              "type": "fill"
+            }
+          ],
+          "measurement": "Steps_Intraday",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "sum"
+              }
+            ]
+          ],
+          "tags": [],
+          "tz": "$TimeZone"
+        }
+      ],
+      "title": "Today's Steps",
+      "transformations": [
+        {
+          "id": "merge",
+          "options": {}
+        }
+      ],
+      "transparent": true,
+      "type": "gauge"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_HEALTH_STATS}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "continuous-blues"
+          },
+          "custom": {
+            "fillOpacity": 100,
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineWidth": 0,
+            "spanNulls": false
+          },
+          "mappings": [
+            {
+              "options": {
+                "0": {
+                  "index": 10,
+                  "text": "Deep"
+                },
+                "1": {
+                  "index": 9,
+                  "text": "Light"
+                },
+                "2": {
+                  "index": 8,
+                  "text": "REM"
+                },
+                "3": {
+                  "color": "transparent",
+                  "index": 7,
+                  "text": "Awake"
+                },
+                "Awake": {
+                  "color": "transparent",
+                  "index": 5
+                },
+                "Deep": {
+                  "color": "#3274D9",
+                  "index": 4
+                },
+                "Light": {
+                  "color": "light-blue",
+                  "index": 3
+                },
+                "N/A": {
+                  "color": "transparent",
+                  "index": 6
+                },
+                "REM": {
+                  "color": "#C0D8FF",
+                  "index": 2
+                },
+                "null": {
+                  "index": 1,
+                  "text": "N/A"
+                }
+              },
+              "type": "value"
+            },
+            {
+              "options": {
+                "from": 0,
+                "result": {
+                  "index": 0,
+                  "text": "N/A"
+                },
+                "to": 0
+              },
+              "type": "range"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 21,
+        "x": 3,
+        "y": 24
+      },
+      "hideTimeOverride": true,
+      "id": 40,
+      "options": {
+        "alignValue": "left",
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true
+        },
+        "mergeValues": false,
+        "rowHeight": 1,
+        "showValue": "never",
+        "tooltip": {
+          "hideZeros": false,
+          "maxHeight": 600,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "11.5.2",
+      "targets": [
+        {
+          "alias": "Sleep levels",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_HEALTH_STATS}"
+          },
+          "groupBy": [],
+          "hide": false,
+          "measurement": "Sleep Levels",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "query": "SELECT sleep_type FROM sleep_levels WHERE short = false",
+          "queryType": "randomWalk",
+          "rawQuery": false,
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "level"
+                ],
+                "type": "field"
+              }
+            ]
+          ],
+          "tags": [
+            {
+              "key": "isMainSleep",
+              "operator": "=",
+              "value": "True"
+            }
+          ]
+        }
+      ],
+      "timeFrom": "24h",
+      "timeShift": "0h",
+      "title": "Sleep Pattern",
+      "type": "state-timeline"
+    },
+    {
+      "datasource": {
+        "type": "datasource",
+        "uid": "-- Mixed --"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
           "displayName": "SpO2 %",
           "mappings": [],
           "max": 100,
@@ -1166,7 +1586,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "semi-dark-red"
+                "color": "semi-dark-red",
+                "value": null
               },
               {
                 "color": "semi-dark-orange",
@@ -1187,10 +1608,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 7,
+        "h": 6,
         "w": 3,
         "x": 0,
-        "y": 19
+        "y": 25
       },
       "id": 37,
       "options": {
@@ -1206,9 +1627,10 @@
         },
         "showThresholdLabels": false,
         "showThresholdMarkers": true,
+        "sizing": "auto",
         "text": {}
       },
-      "pluginVersion": "10.2.2",
+      "pluginVersion": "11.5.2",
       "targets": [
         {
           "alias": "SpO2",
@@ -1258,191 +1680,6 @@
       "type": "gauge"
     },
     {
-      "backgroundColor": "rgba(128,128,128,0.1)",
-      "colorMaps": [
-        {
-          "$$hashKey": "object:192",
-          "color": "#CCC",
-          "text": "N/A"
-        },
-        {
-          "$$hashKey": "object:100",
-          "color": "#E02F44",
-          "text": "Awake"
-        },
-        {
-          "$$hashKey": "object:103",
-          "color": "#3274D9",
-          "text": "Deep"
-        },
-        {
-          "$$hashKey": "object:106",
-          "color": "#8AB8FF",
-          "text": "Light"
-        },
-        {
-          "$$hashKey": "object:109",
-          "color": "#C0D8FF",
-          "text": "REM"
-        }
-      ],
-      "crosshairColor": "#8F070C",
-      "datasource": {
-        "type": "influxdb",
-        "uid": "${DS_HEALTH_STATS}"
-      },
-      "display": "timeline",
-      "expandFromQueryS": 0,
-      "extendLastValue": true,
-      "gridPos": {
-        "h": 4,
-        "w": 21,
-        "x": 3,
-        "y": 24
-      },
-      "hideTimeOverride": false,
-      "highlightOnMouseover": true,
-      "id": 40,
-      "legendSortBy": "-ms",
-      "lineColor": "rgba(0,0,0,0.1)",
-      "metricNameColor": "#000000",
-      "pluginVersion": "7.5.2",
-      "rangeMaps": [
-        {
-          "$$hashKey": "object:197",
-          "from": "null",
-          "text": "N/A",
-          "to": "null"
-        }
-      ],
-      "rowHeight": 50,
-      "showLegend": true,
-      "showLegendNames": true,
-      "showLegendPercent": true,
-      "showLegendValues": true,
-      "showTimeAxis": true,
-      "targets": [
-        {
-          "alias": "Sleep levels",
-          "datasource": {
-            "type": "influxdb",
-            "uid": "${DS_HEALTH_STATS}"
-          },
-          "groupBy": [],
-          "hide": false,
-          "measurement": "Sleep Levels",
-          "orderByTime": "ASC",
-          "policy": "default",
-          "query": "SELECT sleep_type FROM sleep_levels WHERE short = false",
-          "queryType": "randomWalk",
-          "rawQuery": false,
-          "refId": "A",
-          "resultFormat": "time_series",
-          "select": [
-            [
-              {
-                "params": [
-                  "level"
-                ],
-                "type": "field"
-              }
-            ]
-          ],
-          "tags": [
-            {
-              "key": "isMainSleep",
-              "operator": "=",
-              "value": "True"
-            }
-          ]
-        }
-      ],
-      "textSize": 24,
-      "textSizeTime": 12,
-      "timeFrom": "24h",
-      "timeOptions": [
-        {
-          "name": "Years",
-          "value": "years"
-        },
-        {
-          "name": "Months",
-          "value": "months"
-        },
-        {
-          "name": "Weeks",
-          "value": "weeks"
-        },
-        {
-          "name": "Days",
-          "value": "days"
-        },
-        {
-          "name": "Hours",
-          "value": "hours"
-        },
-        {
-          "name": "Minutes",
-          "value": "minutes"
-        },
-        {
-          "name": "Seconds",
-          "value": "seconds"
-        },
-        {
-          "name": "Milliseconds",
-          "value": "milliseconds"
-        }
-      ],
-      "timePrecision": {
-        "name": "Minutes",
-        "value": "minutes"
-      },
-      "timeShift": "0h",
-      "timeTextColor": "#d8d9da",
-      "title": "Sleep Pattern",
-      "type": "natel-discrete-panel",
-      "units": "short",
-      "use12HourClock": false,
-      "useTimePrecision": false,
-      "valueMaps": [
-        {
-          "$$hashKey": "object:195",
-          "op": "=",
-          "text": "N/A",
-          "value": "null"
-        },
-        {
-          "$$hashKey": "object:269",
-          "op": "=",
-          "text": "Deep",
-          "value": "0"
-        },
-        {
-          "$$hashKey": "object:271",
-          "op": "=",
-          "text": "Light",
-          "value": "1"
-        },
-        {
-          "$$hashKey": "object:273",
-          "op": "=",
-          "text": "REM",
-          "value": "2"
-        },
-        {
-          "$$hashKey": "object:275",
-          "op": "=",
-          "text": "Awake",
-          "value": "3"
-        }
-      ],
-      "valueTextColor": "#000000",
-      "writeAllValues": false,
-      "writeLastValue": true,
-      "writeMetricNames": false
-    },
-    {
       "datasource": {
         "type": "influxdb",
         "uid": "${DS_HEALTH_STATS}"
@@ -1452,116 +1689,6 @@
           "color": {
             "mode": "thresholds"
           },
-          "displayName": "of sleep",
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "blue"
-              },
-              {
-                "color": "semi-dark-red",
-                "value": 120
-              },
-              {
-                "color": "semi-dark-orange",
-                "value": 240
-              },
-              {
-                "color": "semi-dark-yellow",
-                "value": 360
-              },
-              {
-                "color": "semi-dark-green",
-                "value": 420
-              }
-            ]
-          },
-          "unit": "m"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 9,
-        "w": 3,
-        "x": 0,
-        "y": 26
-      },
-      "id": 50,
-      "options": {
-        "minVizHeight": 75,
-        "minVizWidth": 75,
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "last"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showThresholdLabels": false,
-        "showThresholdMarkers": true
-      },
-      "pluginVersion": "10.2.2",
-      "targets": [
-        {
-          "alias": "Total Asleep",
-          "datasource": {
-            "type": "influxdb",
-            "uid": "${DS_HEALTH_STATS}"
-          },
-          "groupBy": [
-            {
-              "params": [
-                "1d"
-              ],
-              "type": "time"
-            },
-            {
-              "params": [
-                "null"
-              ],
-              "type": "fill"
-            }
-          ],
-          "measurement": "Sleep Summary",
-          "orderByTime": "ASC",
-          "policy": "default",
-          "refId": "A",
-          "resultFormat": "time_series",
-          "select": [
-            [
-              {
-                "params": [
-                  "minutesAsleep"
-                ],
-                "type": "field"
-              },
-              {
-                "params": [],
-                "type": "last"
-              }
-            ]
-          ],
-          "tags": [],
-          "tz": "$TimeZone"
-        }
-      ],
-      "title": "Last Day Total Sleep",
-      "transparent": true,
-      "type": "gauge"
-    },
-    {
-      "datasource": {
-        "type": "influxdb",
-        "uid": "${DS_HEALTH_STATS}"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
           "custom": {
             "axisBorderShow": false,
             "axisCenteredZero": false,
@@ -1569,9 +1696,10 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 11,
-            "gradientMode": "hue",
+            "gradientMode": "scheme",
             "hideFrom": {
               "legend": false,
               "tooltip": false,
@@ -1594,21 +1722,60 @@
               "mode": "none"
             },
             "thresholdsStyle": {
-              "mode": "off"
+              "mode": "area"
             }
           },
-          "mappings": [],
+          "mappings": [
+            {
+              "options": {
+                "0": {
+                  "index": 3,
+                  "text": "Deep"
+                },
+                "1": {
+                  "index": 2,
+                  "text": "Light"
+                },
+                "2": {
+                  "index": 1,
+                  "text": "REM"
+                },
+                "3": {
+                  "index": 0,
+                  "text": "Awake"
+                },
+                "4": {
+                  "index": 4,
+                  "text": "Awake "
+                }
+              },
+              "type": "value"
+            }
+          ],
           "max": 4,
           "min": -1,
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "transparent",
+                "value": null
               },
               {
-                "color": "red",
-                "value": 4
+                "color": "dark-blue",
+                "value": 0.16
+              },
+              {
+                "color": "super-light-blue",
+                "value": 1
+              },
+              {
+                "color": "super-light-red",
+                "value": 2
+              },
+              {
+                "color": "transparent",
+                "value": 2.8
               }
             ]
           }
@@ -1616,11 +1783,12 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 6,
+        "h": 8,
         "w": 21,
         "x": 3,
-        "y": 28
+        "y": 29
       },
+      "hideTimeOverride": true,
       "id": 39,
       "options": {
         "legend": {
@@ -1630,11 +1798,13 @@
           "showLegend": true
         },
         "tooltip": {
+          "hideZeros": false,
+          "maxHeight": 600,
           "mode": "single",
           "sort": "none"
         }
       },
-      "pluginVersion": "7.5.2",
+      "pluginVersion": "11.5.2",
       "targets": [
         {
           "alias": "Sleep levels",
@@ -1693,71 +1863,72 @@
       "type": "timeseries"
     },
     {
-      "collapsed": false,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 35
-      },
-      "id": 52,
-      "panels": [],
-      "title": "Sleep Data - Long Term",
-      "type": "row"
-    },
-    {
-      "aliasColors": {
-        "Awake": "dark-red",
-        "Deep": "rgb(10, 13, 133)",
-        "Light": "light-blue",
-        "REM": "super-light-orange",
-        "sleep.distinct": "rgb(125, 230, 255)"
-      },
-      "bars": true,
-      "dashLength": 10,
-      "dashes": false,
       "datasource": {
-        "type": "datasource",
-        "uid": "-- Mixed --"
+        "type": "influxdb",
+        "uid": "${DS_HEALTH_STATS}"
       },
-      "fill": 1,
-      "fillGradient": 0,
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "displayName": "of sleep",
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              },
+              {
+                "color": "semi-dark-red",
+                "value": 120
+              },
+              {
+                "color": "semi-dark-orange",
+                "value": 240
+              },
+              {
+                "color": "semi-dark-yellow",
+                "value": 360
+              },
+              {
+                "color": "semi-dark-green",
+                "value": 420
+              }
+            ]
+          },
+          "unit": "m"
+        },
+        "overrides": []
+      },
       "gridPos": {
-        "h": 10,
-        "w": 11,
+        "h": 6,
+        "w": 3,
         "x": 0,
-        "y": 36
+        "y": 31
       },
-      "hiddenSeries": false,
-      "id": 44,
-      "legend": {
-        "alignAsTable": true,
-        "avg": true,
-        "current": true,
-        "max": true,
-        "min": true,
-        "show": true,
-        "total": false,
-        "values": true
-      },
-      "lines": true,
-      "linewidth": 0,
-      "nullPointMode": "null",
+      "id": 50,
       "options": {
-        "alertThreshold": true
+        "minVizHeight": 75,
+        "minVizWidth": 75,
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "last"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "sizing": "auto"
       },
-      "percentage": false,
-      "pluginVersion": "10.2.2",
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": true,
-      "steppedLine": false,
+      "pluginVersion": "11.5.2",
       "targets": [
         {
-          "alias": "Deep",
+          "alias": "Total Asleep",
           "datasource": {
             "type": "influxdb",
             "uid": "${DS_HEALTH_STATS}"
@@ -1765,7 +1936,7 @@
           "groupBy": [
             {
               "params": [
-                "$__interval"
+                "1d"
               ],
               "type": "time"
             },
@@ -1776,33 +1947,190 @@
               "type": "fill"
             }
           ],
-          "hide": false,
           "measurement": "Sleep Summary",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT distinct(\"minutes_deep\") FROM \"sleep\" WHERE is_main_sleep = true AND $timeFilter GROUP BY time($__interval) fill(null)",
-          "rawQuery": false,
-          "refId": "F",
+          "refId": "A",
           "resultFormat": "time_series",
           "select": [
             [
               {
                 "params": [
-                  "minutesDeep"
+                  "minutesAsleep"
                 ],
                 "type": "field"
               },
               {
                 "params": [],
-                "type": "distinct"
+                "type": "last"
               }
             ]
           ],
           "tags": [],
           "tz": "$TimeZone"
+        }
+      ],
+      "title": "Last Day Total Sleep",
+      "transparent": true,
+      "type": "gauge"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 37
+      },
+      "id": 52,
+      "panels": [],
+      "title": "Sleep Data - Long Term",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_HEALTH_STATS}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "fillOpacity": 80,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineWidth": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "m"
         },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Deep"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "dark-blue",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Light"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "light-blue",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "REM"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "light-yellow",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Awake"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "semi-dark-red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 9,
+        "x": 0,
+        "y": 38
+      },
+      "id": 44,
+      "options": {
+        "barRadius": 0.25,
+        "barWidth": 0.4,
+        "fullHighlight": false,
+        "groupWidth": 0.7,
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "orientation": "auto",
+        "showValue": "auto",
+        "stacking": "normal",
+        "tooltip": {
+          "hideZeros": false,
+          "maxHeight": 600,
+          "mode": "single",
+          "sort": "none"
+        },
+        "xTickLabelRotation": 0,
+        "xTickLabelSpacing": 100
+      },
+      "pluginVersion": "11.5.2",
+      "targets": [
         {
-          "alias": "Light",
+          "alias": "Deep",
           "datasource": {
             "type": "influxdb",
             "uid": "${DS_HEALTH_STATS}"
@@ -1810,7 +2138,7 @@
           "groupBy": [
             {
               "params": [
-                "$__interval"
+                "1d"
               ],
               "type": "time"
             },
@@ -1833,19 +2161,21 @@
             [
               {
                 "params": [
-                  "minutesLight"
+                  "minutesDeep"
                 ],
                 "type": "field"
               },
               {
                 "params": [],
-                "type": "distinct"
+                "type": "mean"
               }
             ]
-          ]
+          ],
+          "tags": [],
+          "tz": "$TimeZone"
         },
         {
-          "alias": "REM",
+          "alias": "Light",
           "datasource": {
             "type": "influxdb",
             "uid": "${DS_HEALTH_STATS}"
@@ -1853,7 +2183,7 @@
           "groupBy": [
             {
               "params": [
-                "$__interval"
+                "1d"
               ],
               "type": "time"
             },
@@ -1876,19 +2206,21 @@
             [
               {
                 "params": [
-                  "minutesREM"
+                  "minutesLight"
                 ],
                 "type": "field"
               },
               {
                 "params": [],
-                "type": "distinct"
+                "type": "mean"
               }
             ]
-          ]
+          ],
+          "tags": [],
+          "tz": "$TimeZone"
         },
         {
-          "alias": "Awake",
+          "alias": "REM",
           "datasource": {
             "type": "influxdb",
             "uid": "${DS_HEALTH_STATS}"
@@ -1896,7 +2228,7 @@
           "groupBy": [
             {
               "params": [
-                "$__interval"
+                "1d"
               ],
               "type": "time"
             },
@@ -1919,71 +2251,69 @@
             [
               {
                 "params": [
+                  "minutesREM"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "mean"
+              }
+            ]
+          ],
+          "tags": [],
+          "tz": "$TimeZone"
+        },
+        {
+          "alias": "Awake",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_HEALTH_STATS}"
+          },
+          "groupBy": [
+            {
+              "params": [
+                "1d"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "null"
+              ],
+              "type": "fill"
+            }
+          ],
+          "hide": false,
+          "measurement": "Sleep Summary",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "query": "SELECT distinct(\"minutes_deep\") FROM \"sleep\" WHERE is_main_sleep = true AND $timeFilter GROUP BY time($__interval) fill(null)",
+          "rawQuery": false,
+          "refId": "D",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
                   "minutesAwake"
                 ],
                 "type": "field"
               },
               {
                 "params": [],
-                "type": "distinct"
+                "type": "mean"
               }
             ]
-          ]
+          ],
+          "tags": [],
+          "tz": "$TimeZone"
         }
       ],
-      "thresholds": [
-        {
-          "$$hashKey": "object:974",
-          "colorMode": "critical",
-          "fill": true,
-          "line": true,
-          "op": "gt",
-          "value": 450,
-          "yaxis": "left"
-        }
-      ],
-      "timeRegions": [],
       "title": "Sleep",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "mode": "time",
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "$$hashKey": "object:536",
-          "format": "m",
-          "logBase": 1,
-          "show": true
-        },
-        {
-          "$$hashKey": "object:537",
-          "format": "short",
-          "logBase": 1,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false
-      }
+      "type": "barchart"
     },
     {
-      "aliasColors": {
-        "Awake": "dark-red",
-        "Deep": "rgb(10, 13, 133)",
-        "Light": "light-blue",
-        "REM": "super-light-orange",
-        "sleep.distinct": "rgb(125, 230, 255)"
-      },
-      "bars": true,
-      "dashLength": 10,
-      "dashes": false,
       "datasource": {
         "type": "datasource",
         "uid": "-- Mixed --"
@@ -1991,45 +2321,79 @@
       "description": "",
       "fieldConfig": {
         "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "fillOpacity": 80,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineWidth": 0,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
           "unit": "percent"
         },
         "overrides": []
       },
-      "fill": 1,
-      "fillGradient": 0,
       "gridPos": {
-        "h": 10,
+        "h": 8,
         "w": 7,
-        "x": 11,
-        "y": 36
+        "x": 9,
+        "y": 38
       },
-      "hiddenSeries": false,
       "id": 45,
-      "legend": {
-        "alignAsTable": true,
-        "avg": true,
-        "current": true,
-        "max": true,
-        "min": true,
-        "show": true,
-        "total": false,
-        "values": true
-      },
-      "lines": true,
-      "linewidth": 0,
-      "nullPointMode": "null",
       "options": {
-        "alertThreshold": true
+        "barRadius": 0.25,
+        "barWidth": 0.58,
+        "fullHighlight": false,
+        "groupWidth": 0.7,
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "orientation": "auto",
+        "showValue": "auto",
+        "stacking": "none",
+        "tooltip": {
+          "hideZeros": false,
+          "maxHeight": 600,
+          "mode": "single",
+          "sort": "none"
+        },
+        "xTickLabelRotation": 0,
+        "xTickLabelSpacing": 100
       },
-      "percentage": false,
-      "pluginVersion": "10.2.2",
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": true,
-      "steppedLine": false,
+      "pluginVersion": "11.5.2",
       "targets": [
         {
           "alias": "Efficiency",
@@ -2040,7 +2404,7 @@
           "groupBy": [
             {
               "params": [
-                "$__interval"
+                "1d"
               ],
               "type": "time"
             },
@@ -2069,7 +2433,7 @@
               },
               {
                 "params": [],
-                "type": "distinct"
+                "type": "mean"
               }
             ]
           ],
@@ -2077,47 +2441,8 @@
           "tz": "$TimeZone"
         }
       ],
-      "thresholds": [
-        {
-          "$$hashKey": "object:974",
-          "colorMode": "critical",
-          "fill": true,
-          "line": true,
-          "op": "gt",
-          "value": 450,
-          "yaxis": "left"
-        }
-      ],
-      "timeRegions": [],
       "title": "Sleep Efficiency",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "mode": "time",
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "$$hashKey": "object:536",
-          "format": "percent",
-          "logBase": 1,
-          "show": true
-        },
-        {
-          "$$hashKey": "object:537",
-          "format": "short",
-          "logBase": 1,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false
-      }
+      "type": "barchart"
     },
     {
       "datasource": {
@@ -2158,7 +2483,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "light-blue"
+                "color": "light-blue",
+                "value": null
               },
               {
                 "color": "light-green",
@@ -2187,10 +2513,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 10,
-        "w": 6,
-        "x": 18,
-        "y": 36
+        "h": 8,
+        "w": 8,
+        "x": 16,
+        "y": 38
       },
       "id": 63,
       "options": {
@@ -2207,17 +2533,20 @@
           "placement": "bottom",
           "showLegend": true
         },
-        "orientation": "auto",
+        "orientation": "vertical",
         "showValue": "auto",
         "stacking": "none",
         "tooltip": {
+          "hideZeros": false,
+          "maxHeight": 600,
           "mode": "single",
           "sort": "none"
         },
         "xField": "Time",
-        "xTickLabelRotation": -90,
+        "xTickLabelRotation": 0,
         "xTickLabelSpacing": 100
       },
+      "pluginVersion": "11.5.2",
       "targets": [
         {
           "alias": "Relative Skin Temp ",
@@ -2225,7 +2554,20 @@
             "type": "influxdb",
             "uid": "${DS_HEALTH_STATS}"
           },
-          "groupBy": [],
+          "groupBy": [
+            {
+              "params": [
+                "1d"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "null"
+              ],
+              "type": "fill"
+            }
+          ],
           "measurement": "Skin Temperature Variation",
           "orderByTime": "ASC",
           "policy": "default",
@@ -2238,6 +2580,10 @@
                   "RelativeValue"
                 ],
                 "type": "field"
+              },
+              {
+                "params": [],
+                "type": "mean"
               }
             ]
           ],
@@ -2356,11 +2702,13 @@
           "values": false
         },
         "tooltip": {
+          "hideZeros": false,
+          "maxHeight": 600,
           "mode": "single",
           "sort": "none"
         }
       },
-      "pluginVersion": "9.3.2",
+      "pluginVersion": "11.5.2",
       "targets": [
         {
           "alias": "Deep",
@@ -2584,7 +2932,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -2648,7 +2997,7 @@
         "to": "0",
         "valueFieldName": "Value"
       },
-      "pluginVersion": "9.3.2",
+      "pluginVersion": "2.0.1",
       "targets": [
         {
           "alias": "Sleep Regularity",
@@ -2691,7 +3040,6 @@
         }
       ],
       "title": "Sleep Regularity",
-      "transformations": [],
       "transparent": true,
       "type": "marcusolsson-hourly-heatmap-panel"
     },
@@ -2728,6 +3076,7 @@
             "axisSoftMax": 70,
             "axisSoftMin": 50,
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 41,
             "gradientMode": "opacity",
@@ -2737,7 +3086,7 @@
               "tooltip": false,
               "viz": false
             },
-            "insertNulls": false,
+            "insertNulls": 86400000,
             "lineInterpolation": "smooth",
             "lineStyle": {
               "dash": [
@@ -2767,7 +3116,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -2830,11 +3180,13 @@
           "showLegend": true
         },
         "tooltip": {
+          "hideZeros": false,
+          "maxHeight": 600,
           "mode": "single",
           "sort": "none"
         }
       },
-      "pluginVersion": "7.5.2",
+      "pluginVersion": "11.5.2",
       "targets": [
         {
           "alias": "Resting HR",
@@ -2902,6 +3254,7 @@
             "axisSoftMax": 180,
             "axisSoftMin": 40,
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 41,
             "gradientMode": "opacity",
@@ -2911,7 +3264,7 @@
               "tooltip": false,
               "viz": false
             },
-            "insertNulls": false,
+            "insertNulls": 86400000,
             "lineInterpolation": "smooth",
             "lineStyle": {
               "dash": [
@@ -2941,7 +3294,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -3034,11 +3388,13 @@
           "showLegend": true
         },
         "tooltip": {
+          "hideZeros": false,
+          "maxHeight": 600,
           "mode": "single",
           "sort": "none"
         }
       },
-      "pluginVersion": "7.5.2",
+      "pluginVersion": "11.5.2",
       "targets": [
         {
           "alias": "DailyRmssd",
@@ -3106,6 +3462,7 @@
             "axisSoftMax": 100,
             "axisSoftMin": 88,
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 41,
             "gradientMode": "opacity",
@@ -3115,7 +3472,7 @@
               "tooltip": false,
               "viz": false
             },
-            "insertNulls": false,
+            "insertNulls": 86400000,
             "lineInterpolation": "smooth",
             "lineStyle": {
               "dash": [
@@ -3145,7 +3502,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -3238,11 +3596,13 @@
           "showLegend": true
         },
         "tooltip": {
+          "hideZeros": false,
+          "maxHeight": 600,
           "mode": "single",
           "sort": "none"
         }
       },
-      "pluginVersion": "7.5.2",
+      "pluginVersion": "11.5.2",
       "targets": [
         {
           "alias": "SpO2",
@@ -3310,6 +3670,7 @@
             "axisSoftMax": 18,
             "axisSoftMin": 10,
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 41,
             "gradientMode": "opacity",
@@ -3319,7 +3680,7 @@
               "tooltip": false,
               "viz": false
             },
-            "insertNulls": false,
+            "insertNulls": 86400000,
             "lineInterpolation": "smooth",
             "lineStyle": {
               "dash": [
@@ -3349,7 +3710,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -3412,11 +3774,13 @@
           "showLegend": true
         },
         "tooltip": {
+          "hideZeros": false,
+          "maxHeight": 600,
           "mode": "single",
           "sort": "none"
         }
       },
-      "pluginVersion": "7.5.2",
+      "pluginVersion": "11.5.2",
       "targets": [
         {
           "alias": "Breathing Rate",
@@ -3489,7 +3853,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "dark-red"
+                "color": "dark-red",
+                "value": null
               },
               {
                 "color": "light-yellow",
@@ -3517,7 +3882,7 @@
         "showValueIndicator": true,
         "to": "22"
       },
-      "pluginVersion": "7.5.2",
+      "pluginVersion": "2.0.1",
       "targets": [
         {
           "alias": "Hourly walk heatmap",
@@ -3574,51 +3939,85 @@
       "type": "marcusolsson-hourly-heatmap-panel"
     },
     {
-      "aliasColors": {
-        "steps.distinct": "light-orange"
-      },
-      "bars": true,
-      "dashLength": 10,
-      "dashes": false,
       "datasource": {
         "type": "influxdb",
         "uid": "${DS_HEALTH_STATS}"
       },
-      "fill": 1,
-      "fillGradient": 0,
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "fillOpacity": 80,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineWidth": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
       "gridPos": {
         "h": 9,
         "w": 12,
         "x": 12,
         "y": 72
       },
-      "hiddenSeries": false,
       "id": 17,
-      "legend": {
-        "alignAsTable": true,
-        "avg": true,
-        "current": false,
-        "max": true,
-        "min": true,
-        "show": true,
-        "total": false,
-        "values": true
-      },
-      "lines": false,
-      "linewidth": 1,
-      "nullPointMode": "null",
       "options": {
-        "alertThreshold": true
+        "barRadius": 0.15,
+        "barWidth": 0.44,
+        "fullHighlight": false,
+        "groupWidth": 0.7,
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "orientation": "auto",
+        "showValue": "auto",
+        "stacking": "none",
+        "tooltip": {
+          "hideZeros": false,
+          "maxHeight": 600,
+          "mode": "single",
+          "sort": "none"
+        },
+        "xField": "Time",
+        "xTickLabelRotation": -45,
+        "xTickLabelSpacing": -100
       },
-      "percentage": false,
-      "pluginVersion": "10.2.2",
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
+      "pluginVersion": "11.5.2",
       "targets": [
         {
           "datasource": {
@@ -3647,35 +4046,8 @@
           "tags": []
         }
       ],
-      "thresholds": [],
-      "timeRegions": [],
       "title": "Steps",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "mode": "time",
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "format": "short",
-          "logBase": 1,
-          "show": true
-        },
-        {
-          "format": "short",
-          "logBase": 1,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false
-      }
+      "type": "barchart"
     },
     {
       "datasource": {
@@ -3713,7 +4085,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -3742,7 +4115,7 @@
       },
       "gridPos": {
         "h": 10,
-        "w": 12,
+        "w": 7,
         "x": 0,
         "y": 81
       },
@@ -3762,13 +4135,15 @@
         "showValue": "never",
         "stacking": "normal",
         "tooltip": {
+          "hideZeros": false,
+          "maxHeight": 600,
           "mode": "single",
           "sort": "none"
         },
         "xTickLabelRotation": 0,
         "xTickLabelSpacing": 100
       },
-      "pluginVersion": "9.3.2",
+      "pluginVersion": "11.5.2",
       "targets": [
         {
           "alias": "Light Activity",
@@ -3902,53 +4277,84 @@
       "type": "barchart"
     },
     {
-      "aliasColors": {
-        "Cardio": "semi-dark-yellow",
-        "Fat Burn": "semi-dark-green",
-        "Peak": "red"
-      },
-      "bars": true,
-      "dashLength": 10,
-      "dashes": false,
       "datasource": {
         "type": "influxdb",
         "uid": "${DS_HEALTH_STATS}"
       },
-      "fill": 1,
-      "fillGradient": 0,
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "fillOpacity": 80,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineWidth": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
       "gridPos": {
         "h": 10,
-        "w": 12,
-        "x": 12,
+        "w": 7,
+        "x": 7,
         "y": 81
       },
-      "hiddenSeries": false,
       "id": 15,
-      "legend": {
-        "alignAsTable": true,
-        "avg": true,
-        "current": false,
-        "max": true,
-        "min": true,
-        "show": true,
-        "total": false,
-        "values": true
-      },
-      "lines": false,
-      "linewidth": 1,
-      "nullPointMode": "null",
       "options": {
-        "alertThreshold": true
+        "barRadius": 0.3,
+        "barWidth": 0.51,
+        "fullHighlight": false,
+        "groupWidth": 1,
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "orientation": "auto",
+        "showValue": "auto",
+        "stacking": "normal",
+        "tooltip": {
+          "hideZeros": false,
+          "maxHeight": 600,
+          "mode": "single",
+          "sort": "none"
+        },
+        "xTickLabelRotation": -45,
+        "xTickLabelSpacing": 100
       },
-      "percentage": false,
-      "pluginVersion": "10.2.2",
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": true,
-      "steppedLine": false,
+      "pluginVersion": "11.5.2",
       "targets": [
         {
           "alias": "Fat Burn",
@@ -4077,37 +4483,304 @@
           ]
         }
       ],
-      "thresholds": [],
-      "timeRegions": [],
       "title": "HR Zones",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
+      "type": "barchart"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_HEALTH_STATS}"
       },
-      "type": "graph",
-      "xaxis": {
-        "mode": "time",
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "$$hashKey": "object:1012",
-          "format": "m",
-          "logBase": 1,
-          "show": true
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "masskg"
         },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Weight in KG"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "semi-dark-yellow",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 5,
+        "x": 14,
+        "y": 81
+      },
+      "id": 73,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "11.5.2",
+      "targets": [
         {
-          "$$hashKey": "object:1013",
-          "format": "short",
-          "logBase": 1,
-          "show": true
+          "alias": "Weight in KG",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_HEALTH_STATS}"
+          },
+          "groupBy": [
+            {
+              "params": [
+                "1d"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "null"
+              ],
+              "type": "fill"
+            }
+          ],
+          "measurement": "weight",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "query": "SELECT mean(\"value\")*0.453592 FROM \"weight\" WHERE $timeFilter GROUP BY time(1d) fill(null) tz('$TimeZone') ",
+          "queryType": "randomWalk",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "mean"
+              }
+            ]
+          ],
+          "tags": [],
+          "tz": "$TimeZone"
         }
       ],
-      "yaxis": {
-        "align": false
-      }
+      "title": "Weight",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_HEALTH_STATS}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "BMI"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "light-blue",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 5,
+        "x": 19,
+        "y": 81
+      },
+      "id": 74,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "11.5.2",
+      "targets": [
+        {
+          "alias": "BMI",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_HEALTH_STATS}"
+          },
+          "groupBy": [
+            {
+              "params": [
+                "1d"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "null"
+              ],
+              "type": "fill"
+            }
+          ],
+          "measurement": "weight",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "query": "SELECT mean(\"value\") FROM \"bmi\" WHERE $timeFilter GROUP BY time(1d) fill(null) tz('$TimeZone') ",
+          "queryType": "randomWalk",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "mean"
+              }
+            ]
+          ],
+          "tags": [],
+          "tz": "$TimeZone"
+        }
+      ],
+      "title": "BMI",
+      "type": "timeseries"
     },
     {
       "datasource": {
@@ -4196,9 +4869,9 @@
         ]
       },
       "gridPos": {
-        "h": 8,
-        "w": 9,
-        "x": 1,
+        "h": 10,
+        "w": 8,
+        "x": 0,
         "y": 91
       },
       "id": 47,
@@ -4223,11 +4896,13 @@
         },
         "text": {},
         "tooltip": {
+          "hideZeros": false,
+          "maxHeight": 600,
           "mode": "single",
           "sort": "none"
         }
       },
-      "pluginVersion": "7.5.2",
+      "pluginVersion": "11.5.2",
       "targets": [
         {
           "alias": "Light Activity",
@@ -4400,54 +5075,87 @@
         }
       ],
       "title": "Avg Activity over given duration",
-      "transparent": true,
       "type": "piechart"
     },
     {
-      "aliasColors": {
-        "distance.distinct": "semi-dark-green"
-      },
-      "bars": true,
-      "dashLength": 10,
-      "dashes": false,
       "datasource": {
         "type": "influxdb",
         "uid": "${DS_HEALTH_STATS}"
       },
-      "fill": 1,
-      "fillGradient": 0,
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "fillOpacity": 80,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineWidth": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
       "gridPos": {
-        "h": 8,
-        "w": 7,
-        "x": 10,
+        "h": 10,
+        "w": 8,
+        "x": 8,
         "y": 91
       },
-      "hiddenSeries": false,
       "id": 23,
-      "legend": {
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "show": true,
-        "total": false,
-        "values": false
-      },
-      "lines": false,
-      "linewidth": 1,
-      "nullPointMode": "null",
       "options": {
-        "alertThreshold": true
+        "barRadius": 0,
+        "barWidth": 0.4,
+        "fullHighlight": false,
+        "groupWidth": 0.7,
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "orientation": "auto",
+        "showValue": "auto",
+        "stacking": "none",
+        "tooltip": {
+          "hideZeros": false,
+          "maxHeight": 600,
+          "mode": "single",
+          "sort": "none"
+        },
+        "xTickLabelRotation": -45,
+        "xTickLabelSpacing": 100
       },
-      "percentage": false,
-      "pluginVersion": "10.2.2",
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
+      "pluginVersion": "11.5.2",
       "targets": [
         {
           "alias": "Total Distance",
@@ -4493,84 +5201,104 @@
           "tz": "$TimeZone"
         }
       ],
-      "thresholds": [],
-      "timeRegions": [],
       "title": "Distance",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "mode": "time",
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "$$hashKey": "object:605",
-          "format": "short",
-          "logBase": 1,
-          "show": true
-        },
-        {
-          "$$hashKey": "object:606",
-          "format": "short",
-          "logBase": 1,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false
-      }
+      "type": "barchart"
     },
     {
-      "aliasColors": {
-        "Total Calories": "semi-dark-red",
-        "calories.distinct": "semi-dark-red"
-      },
-      "bars": true,
-      "dashLength": 10,
-      "dashes": false,
       "datasource": {
         "type": "influxdb",
         "uid": "${DS_HEALTH_STATS}"
       },
-      "fill": 1,
-      "fillGradient": 0,
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "fillOpacity": 80,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineWidth": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Total Calories"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "semi-dark-red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
       "gridPos": {
-        "h": 8,
-        "w": 7,
-        "x": 17,
+        "h": 10,
+        "w": 8,
+        "x": 16,
         "y": 91
       },
-      "hiddenSeries": false,
       "id": 21,
-      "legend": {
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "show": true,
-        "total": false,
-        "values": false
-      },
-      "lines": false,
-      "linewidth": 1,
-      "nullPointMode": "null",
       "options": {
-        "alertThreshold": true
+        "barRadius": 0.15,
+        "barWidth": 0.41,
+        "fullHighlight": false,
+        "groupWidth": 0.7,
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "orientation": "auto",
+        "showValue": "auto",
+        "stacking": "none",
+        "tooltip": {
+          "hideZeros": false,
+          "maxHeight": 600,
+          "mode": "single",
+          "sort": "none"
+        },
+        "xTickLabelRotation": 90,
+        "xTickLabelSpacing": 200
       },
-      "percentage": false,
-      "pluginVersion": "10.2.2",
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
+      "pluginVersion": "11.5.2",
       "targets": [
         {
           "alias": "Total Calories",
@@ -4581,7 +5309,7 @@
           "groupBy": [
             {
               "params": [
-                "$__interval"
+                "1d"
               ],
               "type": "time"
             },
@@ -4608,7 +5336,7 @@
               },
               {
                 "params": [],
-                "type": "distinct"
+                "type": "mean"
               }
             ]
           ],
@@ -4616,88 +5344,88 @@
           "tz": "$TimeZone"
         }
       ],
-      "thresholds": [],
-      "timeRegions": [],
       "title": "Calories",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "mode": "time",
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "$$hashKey": "object:1621",
-          "format": "short",
-          "logBase": 1,
-          "show": true
-        },
-        {
-          "$$hashKey": "object:1622",
-          "format": "short",
-          "logBase": 1,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false
-      }
+      "type": "barchart"
     },
     {
-      "backgroundColor": "rgba(128,128,128,0.1)",
-      "colorMaps": [
-        {
-          "$$hashKey": "object:3054",
-          "color": "#96D98D",
-          "text": "On Hand"
-        },
-        {
-          "$$hashKey": "object:4255",
-          "color": "#E02F44",
-          "text": "Off Hand"
-        }
-      ],
-      "crosshairColor": "#8F070C",
       "datasource": {
         "type": "influxdb",
         "uid": "${DS_HEALTH_STATS}"
       },
-      "display": "timeline",
-      "expandFromQueryS": 0,
-      "extendLastValue": true,
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "fillOpacity": 100,
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineWidth": 0,
+            "spanNulls": false
+          },
+          "mappings": [
+            {
+              "options": {
+                "1": {
+                  "color": "light-green",
+                  "index": 1,
+                  "text": "On Hand"
+                },
+                "NaN": {
+                  "color": "semi-dark-red",
+                  "index": 0,
+                  "text": "Off Hand"
+                }
+              },
+              "type": "value"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
       "gridPos": {
         "h": 4,
         "w": 24,
         "x": 0,
-        "y": 99
+        "y": 101
       },
-      "highlightOnMouseover": true,
       "id": 9,
-      "legendSortBy": "-ms",
-      "lineColor": "rgba(0,0,0,0.1)",
-      "metricNameColor": "#000000",
-      "pluginVersion": "7.5.2",
-      "rangeMaps": [
-        {
-          "$$hashKey": "object:3059",
-          "from": "1",
-          "text": "On Hand",
-          "to": "300"
+      "options": {
+        "alignValue": "left",
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "mergeValues": true,
+        "rowHeight": 0.9,
+        "showValue": "never",
+        "tooltip": {
+          "hideZeros": false,
+          "maxHeight": 600,
+          "mode": "single",
+          "sort": "none"
         }
-      ],
-      "rowHeight": 50,
-      "showDistinctCount": false,
-      "showLegend": true,
-      "showLegendNames": true,
-      "showLegendPercent": true,
-      "showLegendValues": true,
-      "showTimeAxis": true,
-      "showTransitionCount": false,
+      },
+      "pluginVersion": "11.5.2",
       "targets": [
         {
           "alias": "Heart rate",
@@ -4708,7 +5436,7 @@
           "groupBy": [
             {
               "params": [
-                "2m"
+                "5m"
               ],
               "type": "time"
             },
@@ -4746,65 +5474,36 @@
           "tz": "$TimeZone"
         }
       ],
-      "textSize": 24,
-      "textSizeTime": 12,
-      "timeOptions": [
-        {
-          "name": "Years",
-          "value": "years"
-        },
-        {
-          "name": "Months",
-          "value": "months"
-        },
-        {
-          "name": "Weeks",
-          "value": "weeks"
-        },
-        {
-          "name": "Days",
-          "value": "days"
-        },
-        {
-          "name": "Hours",
-          "value": "hours"
-        },
-        {
-          "name": "Minutes",
-          "value": "minutes"
-        },
-        {
-          "name": "Seconds",
-          "value": "seconds"
-        },
-        {
-          "name": "Milliseconds",
-          "value": "milliseconds"
-        }
-      ],
-      "timePrecision": {
-        "name": "Minutes",
-        "value": "minutes"
-      },
-      "timeTextColor": "#d8d9da",
       "title": "Band wearing ",
-      "transparent": true,
-      "type": "natel-discrete-panel",
-      "units": "short",
-      "use12HourClock": false,
-      "useTimePrecision": false,
-      "valueMaps": [
+      "transformations": [
         {
-          "$$hashKey": "object:3057",
-          "op": "=",
-          "text": "Off Hand",
-          "value": "0"
+          "id": "calculateField",
+          "options": {
+            "binary": {
+              "left": {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Heart rate"
+                }
+              },
+              "operator": "/",
+              "right": {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Heart rate"
+                }
+              }
+            },
+            "mode": "binary",
+            "reduce": {
+              "reducer": "sum"
+            },
+            "replaceFields": true
+          }
         }
       ],
-      "valueTextColor": "#000000",
-      "writeAllValues": false,
-      "writeLastValue": false,
-      "writeMetricNames": false
+      "transparent": true,
+      "type": "state-timeline"
     },
     {
       "datasource": {
@@ -4831,7 +5530,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "semi-dark-blue"
+                "color": "semi-dark-blue",
+                "value": null
               },
               {
                 "color": "semi-dark-green",
@@ -4871,10 +5571,10 @@
         ]
       },
       "gridPos": {
-        "h": 11,
-        "w": 24,
+        "h": 14,
+        "w": 13,
         "x": 0,
-        "y": 103
+        "y": 105
       },
       "id": 34,
       "options": {
@@ -4897,7 +5597,7 @@
           }
         ]
       },
-      "pluginVersion": "10.2.2",
+      "pluginVersion": "11.5.2",
       "targets": [
         {
           "alias": "Walk",
@@ -5012,46 +5712,6 @@
       "type": "table"
     },
     {
-      "alert": {
-        "alertRuleTags": {},
-        "conditions": [
-          {
-            "evaluator": {
-              "params": [
-                25
-              ],
-              "type": "lt"
-            },
-            "operator": {
-              "type": "and"
-            },
-            "query": {
-              "params": [
-                "A",
-                "5m",
-                "now"
-              ]
-            },
-            "reducer": {
-              "params": [],
-              "type": "avg"
-            },
-            "type": "query"
-          }
-        ],
-        "executionErrorState": "keep_state",
-        "for": "5m",
-        "frequency": "1m",
-        "handler": 1,
-        "message": "Device Battery Low",
-        "name": "Charge 4 Battery Level alert",
-        "noDataState": "keep_state",
-        "notifications": [
-          {
-            "uid": "6172dkrMz"
-          }
-        ]
-      },
       "datasource": {
         "type": "influxdb",
         "uid": "${DS_HEALTH_STATS}"
@@ -5059,7 +5719,419 @@
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "palette-classic"
+            "mode": "continuous-BlYlRd"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          },
+          "decimals": 8,
+          "fieldMinMax": false,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "GPS.distance"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "continuous-greens"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 14,
+        "w": 11,
+        "x": 13,
+        "y": 105
+      },
+      "id": 70,
+      "options": {
+        "basemap": {
+          "config": {
+            "server": "world-imagery",
+            "showLabels": true,
+            "theme": "dark"
+          },
+          "name": "Layer 0",
+          "opacity": 1,
+          "tooltip": true,
+          "type": "esri-xyz"
+        },
+        "controls": {
+          "mouseWheelZoom": false,
+          "showAttribution": false,
+          "showDebug": false,
+          "showMeasure": false,
+          "showScale": true,
+          "showZoom": true
+        },
+        "layers": [
+          {
+            "config": {
+              "showLegend": false,
+              "style": {
+                "color": {
+                  "fixed": "transparent"
+                },
+                "opacity": 0,
+                "rotation": {
+                  "fixed": 0,
+                  "max": 360,
+                  "min": -360,
+                  "mode": "mod"
+                },
+                "size": {
+                  "field": "GPS.speed_kph",
+                  "fixed": 5,
+                  "max": 12,
+                  "min": 1
+                },
+                "symbol": {
+                  "fixed": "img/icons/marker/circle.svg",
+                  "mode": "fixed"
+                },
+                "symbolAlign": {
+                  "horizontal": "center",
+                  "vertical": "center"
+                },
+                "textConfig": {
+                  "fontSize": 12,
+                  "offsetX": 0,
+                  "offsetY": 0,
+                  "textAlign": "center",
+                  "textBaseline": "middle"
+                }
+              }
+            },
+            "location": {
+              "latitude": "GPS.lat",
+              "longitude": "GPS.lon",
+              "mode": "coords"
+            },
+            "name": "Layer 4",
+            "tooltip": false,
+            "type": "markers"
+          },
+          {
+            "config": {
+              "arrow": 0,
+              "style": {
+                "color": {
+                  "fixed": "#1e1e1e"
+                },
+                "lineWidth": 2,
+                "opacity": 1,
+                "rotation": {
+                  "fixed": 0,
+                  "max": 360,
+                  "min": -360,
+                  "mode": "mod"
+                },
+                "size": {
+                  "field": "GPS.speed_kph",
+                  "fixed": 5,
+                  "max": 15,
+                  "min": 2
+                },
+                "symbol": {
+                  "fixed": "img/icons/marker/circle.svg",
+                  "mode": "fixed"
+                },
+                "symbolAlign": {
+                  "horizontal": "center",
+                  "vertical": "center"
+                },
+                "text": {
+                  "fixed": "",
+                  "mode": "field"
+                },
+                "textConfig": {
+                  "fontSize": 12,
+                  "offsetX": 0,
+                  "offsetY": 0,
+                  "textAlign": "center",
+                  "textBaseline": "middle"
+                }
+              }
+            },
+            "location": {
+              "latitude": "GPS.lat",
+              "longitude": "GPS.lon",
+              "mode": "coords"
+            },
+            "name": "Layer 3",
+            "opacity": 1,
+            "tooltip": false,
+            "type": "route"
+          },
+          {
+            "config": {
+              "arrow": 0,
+              "style": {
+                "color": {
+                  "field": "GPS.heart_rate",
+                  "fixed": "dark-green"
+                },
+                "lineWidth": 2,
+                "opacity": 0.5,
+                "rotation": {
+                  "fixed": 0,
+                  "max": 360,
+                  "min": -360,
+                  "mode": "mod"
+                },
+                "size": {
+                  "fixed": 5,
+                  "max": 15,
+                  "min": 1
+                },
+                "symbol": {
+                  "fixed": "img/icons/marker/circle.svg",
+                  "mode": "fixed"
+                },
+                "symbolAlign": {
+                  "horizontal": "center",
+                  "vertical": "center"
+                },
+                "textConfig": {
+                  "fontSize": 12,
+                  "offsetX": 0,
+                  "offsetY": 0,
+                  "textAlign": "center",
+                  "textBaseline": "middle"
+                }
+              }
+            },
+            "location": {
+              "latitude": "GPS.lat",
+              "longitude": "GPS.lon",
+              "mode": "coords"
+            },
+            "name": "Layer 1",
+            "opacity": 1,
+            "tooltip": false,
+            "type": "route"
+          }
+        ],
+        "tooltip": {
+          "mode": "details"
+        },
+        "view": {
+          "allLayers": true,
+          "id": "fit",
+          "lastOnly": false,
+          "lat": 47.473641,
+          "layer": "Layer 1",
+          "lon": 19.054979,
+          "padding": 3,
+          "shared": true,
+          "zoom": 16
+        }
+      },
+      "pluginVersion": "11.5.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_HEALTH_STATS}"
+          },
+          "hide": false,
+          "query": "SELECT \"lat\",\"lon\",\"speed_kph\",\"heart_rate\", \"altitude\", \"distance\"\nFROM \"GPS\" \nWHERE \"ActivityID\"::tag = '$ActivityGPS' AND \"distance\"::field > 0\nAND $timeFilter",
+          "rawQuery": true,
+          "refId": "C",
+          "resultFormat": "time_series"
+        }
+      ],
+      "title": "GPS",
+      "transformations": [
+        {
+          "id": "joinByField",
+          "options": {
+            "byField": "Time",
+            "mode": "outer"
+          }
+        }
+      ],
+      "type": "geomap"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_HEALTH_STATS}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "light-green",
+                "value": 1728000000000
+              },
+              {
+                "color": "light-red",
+                "value": 3456000000000
+              },
+              {
+                "color": "semi-dark-red",
+                "value": 5184000000000
+              }
+            ]
+          },
+          "unit": "dateTimeFromNow"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 3,
+        "x": 0,
+        "y": 119
+      },
+      "id": 69,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "/^Time$/",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.5.2",
+      "targets": [
+        {
+          "groupBy": [
+            {
+              "params": [
+                "$__interval"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "null"
+              ],
+              "type": "fill"
+            }
+          ],
+          "measurement": "DeviceBatteryLevel",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "query": "SELECT time FROM \"DeviceBatteryLevel\" WHERE DERIVATIVE(\"value\", 1s) > 0\n",
+          "rawQuery": false,
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "mean"
+              },
+              {
+                "params": [
+                  "5m"
+                ],
+                "type": "derivative"
+              }
+            ]
+          ],
+          "tags": [],
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_HEALTH_STATS}"
+          }
+        }
+      ],
+      "title": "Last Charge",
+      "transformations": [
+        {
+          "id": "filterByValue",
+          "options": {
+            "filters": [
+              {
+                "config": {
+                  "id": "greater",
+                  "options": {
+                    "value": "0.2"
+                  }
+                },
+                "fieldName": "DeviceBatteryLevel.derivative"
+              }
+            ],
+            "match": "any",
+            "type": "include"
+          }
+        },
+        {
+          "id": "reduce",
+          "options": {
+            "includeTimeField": true,
+            "mode": "reduceFields",
+            "reducers": [
+              "last"
+            ]
+          }
+        }
+      ],
+      "transparent": true,
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_HEALTH_STATS}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
           },
           "custom": {
             "axisBorderShow": false,
@@ -5068,23 +6140,19 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
-            "fillOpacity": 41,
-            "gradientMode": "opacity",
+            "fillOpacity": 14,
+            "gradientMode": "scheme",
             "hideFrom": {
               "legend": false,
               "tooltip": false,
               "viz": false
             },
-            "insertNulls": false,
+            "insertNulls": 3600000,
             "lineInterpolation": "smooth",
             "lineStyle": {
-              "dash": [
-                0,
-                3,
-                3
-              ],
-              "fill": "dot"
+              "fill": "solid"
             },
             "lineWidth": 2,
             "pointSize": 6,
@@ -5092,69 +6160,52 @@
               "type": "linear"
             },
             "showPoints": "auto",
-            "spanNulls": true,
+            "spanNulls": false,
             "stacking": {
               "group": "A",
               "mode": "none"
             },
             "thresholdsStyle": {
-              "mode": "line+area"
+              "mode": "area"
             }
           },
+          "decimals": 0,
           "mappings": [],
           "min": 0,
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
-                "color": "red"
+                "color": "light-blue",
+                "value": null
               },
               {
-                "color": "transparent",
-                "value": 25
+                "color": "semi-dark-red",
+                "value": 20
+              },
+              {
+                "color": "semi-dark-orange",
+                "value": 30
+              },
+              {
+                "color": "semi-dark-yellow",
+                "value": 40
+              },
+              {
+                "color": "semi-dark-green",
+                "value": 50
               }
             ]
           },
-          "unit": "short"
+          "unit": "percent"
         },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Battery Percentage"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "semi-dark-blue",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "deviceBatteryLevel.distinct"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "dark-blue",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          }
-        ]
+        "overrides": []
       },
       "gridPos": {
         "h": 7,
-        "w": 24,
-        "x": 0,
-        "y": 114
+        "w": 21,
+        "x": 3,
+        "y": 119
       },
       "id": 19,
       "options": {
@@ -5165,11 +6216,13 @@
           "showLegend": true
         },
         "tooltip": {
+          "hideZeros": false,
+          "maxHeight": 600,
           "mode": "multi",
           "sort": "none"
         }
       },
-      "pluginVersion": "9.0.5",
+      "pluginVersion": "11.5.2",
       "targets": [
         {
           "alias": "Battery Percentage",
@@ -5215,199 +6268,27 @@
         }
       ],
       "title": "Battery Level",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "influxdb",
-        "uid": "${DS_HEALTH_STATS}"
-      },
-      "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "smooth",
-            "lineStyle": {
-              "dash": [
-                0,
-                3,
-                3
-              ],
-              "fill": "dot"
-            },
-            "lineWidth": 2,
-            "pointSize": 4,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": true,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "max": 1,
-          "min": -2,
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "super-light-blue"
-              }
-            ]
-          },
-          "unit": "short"
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Battery depletion rate"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "semi-dark-red",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Battery depletion rate [ d(battery level)/dt ]"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "semi-dark-red",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 7,
-        "w": 24,
-        "x": 0,
-        "y": 121
-      },
-      "id": 64,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "none"
-        }
-      },
-      "pluginVersion": "9.0.5",
-      "targets": [
-        {
-          "alias": "Battery depletion rate [ d(battery level)/dt ]",
-          "datasource": {
-            "type": "influxdb",
-            "uid": "${DS_HEALTH_STATS}"
-          },
-          "groupBy": [
-            {
-              "params": [
-                "2h"
-              ],
-              "type": "time"
-            },
-            {
-              "params": [
-                "linear"
-              ],
-              "type": "fill"
-            }
-          ],
-          "measurement": "DeviceBatteryLevel",
-          "orderByTime": "ASC",
-          "policy": "default",
-          "queryType": "randomWalk",
-          "refId": "A",
-          "resultFormat": "time_series",
-          "select": [
-            [
-              {
-                "params": [
-                  "value"
-                ],
-                "type": "field"
-              },
-              {
-                "params": [],
-                "type": "distinct"
-              },
-              {
-                "params": [
-                  "1h"
-                ],
-                "type": "derivative"
-              }
-            ]
-          ],
-          "tags": []
-        }
-      ],
-      "title": "Battery usage rate [ d(battery level)/dt ]",
+      "transparent": true,
       "type": "timeseries"
     }
   ],
-  "refresh": "30s",
-  "schemaVersion": 39,
+  "refresh": "5m",
+  "schemaVersion": 40,
   "tags": [],
   "templating": {
     "list": [
       {
         "current": {
-          "selected": false,
-          "text": "America/Toronto",
-          "value": "America/Toronto"
+          "text": "Europe/Budapest",
+          "value": "Europe/Budapest"
         },
         "description": "Determines the time zone for grouping by day",
-        "hide": 0,
         "includeAll": false,
         "label": "Time Zone",
-        "multi": false,
         "name": "TimeZone",
         "options": [
           {
-            "selected": true,
+            "selected": false,
             "text": "America/Toronto",
             "value": "America/Toronto"
           },
@@ -5417,15 +6298,29 @@
             "value": "Asia/Kolkata"
           },
           {
-            "selected": false,
-            "text": "Europe/Berlin",
-            "value": "Europe/Berlin"
+            "selected": true,
+            "text": "Europe/Budapest",
+            "value": "Europe/Budapest"
           }
         ],
-        "query": "America/Toronto, Asia/Kolkata, Europe/Berlin,",
-        "queryValue": "",
-        "skipUrlSync": false,
+        "query": "America/Toronto, Asia/Kolkata, Europe/Budapest",
         "type": "custom"
+      },
+      {
+        "allowCustomValue": false,
+        "current": {},
+        "definition": "SHOW TAG VALUES FROM \"GPS\" WITH KEY = \"ActivityID\" WHERE $timeFilter",
+        "label": "Activity with GPS",
+        "name": "ActivityGPS",
+        "options": [],
+        "query": {
+          "query": "SHOW TAG VALUES FROM \"GPS\" WITH KEY = \"ActivityID\" WHERE $timeFilter",
+          "refId": "InfluxVariableQueryEditor-VariableQuery"
+        },
+        "refresh": 1,
+        "regex": "",
+        "sort": 4,
+        "type": "query"
       }
     ]
   },
@@ -5434,9 +6329,9 @@
     "to": "now"
   },
   "timepicker": {},
-  "timezone": "",
+  "timezone": "browser",
   "title": "Health Stats",
   "uid": "_cl7FMC4z",
-  "version": 76,
+  "version": 104,
   "weekStart": ""
 }
